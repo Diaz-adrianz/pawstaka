@@ -18,14 +18,11 @@ import {
   type CategoryFormDialogPayload,
 } from '@/features/library';
 import { useDialogState } from '@/hooks/use-dialog';
-import { usePortalBase } from '@/hooks/use-portal-base';
 import { useResourceQuery } from '@/lib/resource-query/hooks/use-resource-query';
 import { Can } from '@casl/react';
 import { RiAddLine } from '@remixicon/react';
 
 const CategoriesPage = () => {
-  const portalBase = usePortalBase();
-
   const createDialog = useDialogState(),
     updateDialog = useDialogState<CategoryFormDialogPayload>();
 
@@ -43,7 +40,7 @@ const CategoriesPage = () => {
 
       <PageNav
         items={[
-          { label: 'Dashboard', path: portalBase },
+          { label: 'Dashboard', path: '/admin' },
           { label: 'Library' },
           { label: 'Categories' },
         ]}

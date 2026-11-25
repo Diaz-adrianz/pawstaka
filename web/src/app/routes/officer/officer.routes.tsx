@@ -1,5 +1,5 @@
 import type { RouteObject } from 'react-router-dom';
-import CategoriesPage from '../admin/library/categories.page';
+import CategoriesPage from '../admin/categories/categories.page';
 import BooksPage from '../admin/books/books.page';
 import StockPage from '../admin/stock/stock.page';
 import MembersPage from '../admin/library/members.page';
