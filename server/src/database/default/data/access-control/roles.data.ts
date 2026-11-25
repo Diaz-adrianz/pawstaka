@@ -1,5 +1,5 @@
 export const RolesData = {
   SUPERADMIN: 'Superadmin',
-  ADMIN: 'Admin',
-  USER: 'User',
+  OFFICER: 'Officer',
+  MEMBER: 'Member',
 };

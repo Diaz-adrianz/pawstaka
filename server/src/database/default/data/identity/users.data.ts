@@ -7,13 +7,13 @@ export const UsersData = [
     roles: [{ name: RolesData.SUPERADMIN }],
   },
   {
-    username: 'admin',
-    email: `admin@example.com`,
-    roles: [{ name: RolesData.ADMIN }],
+    username: 'officer',
+    email: `officer@example.com`,
+    roles: [{ name: RolesData.OFFICER }],
   },
   {
-    username: 'user',
-    email: `user@example.com`,
-    roles: [{ name: RolesData.USER }],
+    username: 'member',
+    email: `member@example.com`,
+    roles: [{ name: RolesData.MEMBER }],
   },
 ];

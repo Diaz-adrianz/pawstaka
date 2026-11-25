@@ -7,3 +7,9 @@ Task 1: Ruling: add @Index decorators to Book.categoryId and Loan.memberId/bookI
 Task 1: Ruling: add `library-entities.spec.ts` not listed in plan — executing-plans requires RED-GREEN gate; cost: one small server test file.
 Task 1: Ruling: test-driven-development sub-skill not installed — followed RED→GREEN manually with `library-entities.spec.ts`; cost: no skill-specific checklist.
 Task 1: complete (no commits, tests: npm test -- library-entities.spec → 10 passed; build: PASS; migration: Library1795574606358 executed successfully).
+Task 2 pre-flight: Task 2 consumes `Category`, `Book`, `Member` from Task 1 — names and paths match plan; no conflict.
+Task 2: Ruling: add legacy-role cleanup to existing roles seeder — Step 1 requires removing obsolete `Admin`/`User` rows before reseeding; cost: deletes old role_permissions and role_users rows for those roles.
+Task 2: Ruling: make library seeders idempotent via existence checks plus `.orIgnore()` — `category.name` and `book.title` are not unique; cost: one extra lookup query per seeder.
+Task 2: Ruling: use flat dotted condition `{'member.userId': {eq: '{{actor.id}}'}}` instead of plan's nested object — `Condition` type and `StoreService.buildResourceQuery()` accept field strings with operators, not nested objects; cost: plan text stays stale, runtime query behavior matches permission mechanism.
+Task 2: complete (no commits, tests: npm test -- library-seed-data.spec → 4 passed; seed: roles/users/role_users/permissions/role_permissions/templates/categories/books/members all inserted; repeat library seeders 0 inserted; build: PASS).
+User: Task 2 fixes are desired — keep as-is, no revert.
