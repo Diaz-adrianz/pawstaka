@@ -37,3 +37,7 @@ Task 5 pre-flight: consumes `Member`, `Loan`, `ResourceService`, `ResourceQuery`
 Task 5: Ruling: use `IsOptionalNonNull` on `UpdateMemberDto.code`, `.name`, `.active` — `PartialType` converts required fields to `IsOptional`, which accepts null; matches user instruction and book/category pattern; cost: three explicit overrides in update DTO.
 Task 5: Ruling: add update-DTO null validation test to `member.service.spec.ts` — user supplied the nullability rule as an explicit requirement; cost: one extra small test.
 Task 5: complete (no commits, tests: npm test -- member.service.spec → 2 passed; build: PASS).
+Repo note: user commit `70dbe59` committed Task 5 — keep as-is, no revert.
+Task 6 pre-flight: consumes `Book`, `Member`, `Loan`, `LoanStatus`, `ResourceService`, `ResourceQuery`, `StoreService`, and `LibraryModule` from earlier tasks — names and paths match current code; no conflict.
+Task 6: Ruling: add successful-return stock/lock assertion beyond plan's four tests — Review Focus requires return path to pin row lock and stock increment; cost: one extra small test.
+Task 6: complete (no commits, tests: npm test -- loan.service.spec → 5 passed; build: PASS).

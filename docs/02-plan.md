@@ -575,7 +575,7 @@ Add `Loan` to `forFeature`, and controller/service to `LibraryModule`.
 - [ ] **Step 5: Run tests and build**
 
 Run: `cd server && npm test -- loan.service.spec && npm run build`
-Expected: 4 tests PASS and successful build.
+Expected: 5 tests PASS and successful build.
 
 ---
 

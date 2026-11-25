@@ -6,6 +6,8 @@ import { BookController } from './resources/book/book.controller';
 import { BookService } from './resources/book/book.service';
 import { MemberController } from './resources/member/member.controller';
 import { MemberService } from './resources/member/member.service';
+import { LoanController } from './resources/loan/loan.controller';
+import { LoanService } from './resources/loan/loan.service';
 import { Book } from './entities/book.entity';
 import { Category } from './entities/category.entity';
 import { Loan } from './entities/loan.entity';
@@ -17,7 +19,12 @@ import { StorageModule } from '../storage/storage.module';
     DefaultDatabaseModule.forFeature([Category, Book, Loan, Member]),
     StorageModule,
   ],
-  controllers: [CategoryController, BookController, MemberController],
-  providers: [CategoryService, BookService, MemberService],
+  controllers: [
+    CategoryController,
+    BookController,
+    MemberController,
+    LoanController,
+  ],
+  providers: [CategoryService, BookService, MemberService, LoanService],
 })
 export class LibraryModule {}
