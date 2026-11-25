@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { randomUUID } from 'crypto';
 import { Repository } from 'typeorm';
 import { ResourceService } from '../../../../common/services/resource.service';
 import { DatabaseKeys } from '../../../../database/database-keys.constant';
 import { ResourceQuery } from '../../../../shared/classes/resource-query.class';
+import { StorageService } from '../../../storage/storage.service';
 import {
   BookHasActiveLoansException,
   BookStockBelowBorrowedException,
@@ -13,6 +15,7 @@ import { Category } from '../../entities/category.entity';
 import { Loan } from '../../entities/loan.entity';
 import { LoanStatus } from '../../enums/loan-status.enum';
 import { CreateBookDto } from './dto/create-book.dto';
+import { UpdateBookCoverDto } from './dto/update-book-cover.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 
 @Injectable()
@@ -24,6 +27,7 @@ export class BookService extends ResourceService<Book> {
     private categoryRepo: Repository<Category>,
     @InjectRepository(Loan, DatabaseKeys.DEFAULT)
     private loanRepo: Repository<Loan>,
+    private storage: StorageService,
   ) {
     super(bookRepo);
   }
@@ -68,6 +72,33 @@ export class BookService extends ResourceService<Book> {
     return this.bookRepo.save(data);
   }
 
+  async updateCover(rq: ResourceQuery, dto: UpdateBookCoverDto) {
+    const book = await this.load(rq.toFindOptions());
+    const previousCover = book.cover;
+
+    const cover = dto.cover
+      ? (
+          await this.storage.move(
+            dto.cover.key,
+            `public/library/book-covers/${book.id}/${randomUUID()}`,
+            {
+              etag: dto.cover.etag,
+              cacheControl: 'public, max-age=31536000, immutable',
+            },
+          )
+        ).key
+      : null;
+
+    try {
+      const result = await this.update(rq, { cover: cover as string });
+      if (previousCover) await this.storage.delete(previousCover).catch();
+      return result;
+    } catch (e) {
+      if (cover) await this.storage.delete(cover).catch();
+      throw e;
+    }
+  }
+
   async archive(rq: ResourceQuery) {
     const data = await this.load(rq.toFindOptions());
 
@@ -99,7 +130,8 @@ export class BookService extends ResourceService<Book> {
       withDeleted: true,
     });
     if (loans) throw new BookHasActiveLoansException();
-
-    return this.bookRepo.remove(data);
+    const res = await this.bookRepo.remove(data);
+    if (res.cover) await this.storage.delete(res.cover).catch();
+    return res;
   }
 }

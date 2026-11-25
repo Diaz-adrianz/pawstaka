@@ -7,9 +7,13 @@ import { BookService } from './resources/book/book.service';
 import { Book } from './entities/book.entity';
 import { Category } from './entities/category.entity';
 import { Loan } from './entities/loan.entity';
+import { StorageModule } from '../storage/storage.module';
 
 @Module({
-  imports: [DefaultDatabaseModule.forFeature([Category, Book, Loan])],
+  imports: [
+    DefaultDatabaseModule.forFeature([Category, Book, Loan]),
+    StorageModule,
+  ],
   controllers: [CategoryController, BookController],
   providers: [CategoryService, BookService],
 })

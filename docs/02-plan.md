@@ -30,6 +30,7 @@
 3. Two returns racing on one loan must serialize on a row lock; the loser sees `returnedAt` set and gets 409. Tested in Task 6.
 4. Returning when `stockAvailable = stockTotal` (drifted data) must return 409 rather than exceed total stock. Tested in Task 6.
 5. Archiving/deleting a category that still has books, or a book with active loans, must return 409 and keep the record. Tested in Tasks 3 and 4.
+6. A failed book-cover update must delete the newly moved permanent object and leave the old cover intact. Tested in Task 15.
 
 ---
 
@@ -961,6 +962,128 @@ Run: `cd web && npm run typecheck && npm run lint`
 Expected: both pass.
 
 Manual check: sign in as `member@example.com`, open `/catalog`, search `Hobbit`, open `/loans`; only the demo member's loans appear.
+
+---
+
+### Task 15: Book Cover Upload
+
+**Files:**
+- Create: `server/src/modules/library/resources/book/dto/update-book-cover.dto.ts`
+- Modify: `server/src/modules/library/resources/book/book.service.ts`
+- Modify: `server/src/modules/library/resources/book/book.controller.ts`
+- Modify: `server/src/modules/library/resources/book/dto/update-book.dto.ts`
+- Modify: `server/src/modules/library/library.module.ts`
+- Modify: `server/src/modules/library/entities/book.entity.ts`
+- Modify: `server/src/database/default/data/access-control/permissions.data.ts`
+- Modify: `server/src/modules/library/resources/book/book.service.spec.ts`
+- Create: `server/src/database/default/data/access-control/library-cover-permission.spec.ts`
+
+**Interfaces:**
+- Consumes: `Book`, `BookService`, `StorageService`, `StoreService`, `PermissionsData`.
+- Produces: `BookService.updateCover(rq, dto)`, `PATCH /library/books/:id/cover`, permission entry `book:update-cover`.
+- `UpdateBookCoverDto` mirrors `UpdateUserAvatarDto`: nullable `IsStorageUploadResult`, same image MIME types, same `2 * MB` cap.
+- `Book.cover` remains an S3 object key. `Book.coverUrl` is a computed public URL, mirroring `User.avatarUrl`.
+- `UpdateBookDto` extends `PartialType(CreateBookDto)` and keeps `cover` as an internal excluded field, mirroring `UpdateUserDto.avatar`.
+
+- [ ] **Step 1: Write the failing test**
+
+Add to `book.service.spec.ts`, with `jest.mock('file-type', () => ({ fileTypeFromStream: jest.fn() }))` before the tests because Jest cannot parse the ESM dependency pulled in by `StorageService`:
+
+```ts
+it('moves cover upload and deletes previous cover', async () => {
+  const bookRepo = {
+    findOneOrFail: jest.fn().mockResolvedValue({ id: 'b1', cover: 'old.jpg' }),
+    merge: jest.fn((v, patch) => Object.assign(v, patch)),
+    save: jest.fn(async (v) => v),
+  } as any;
+  const storage = {
+    move: jest.fn().mockResolvedValue({ key: 'new.jpg', etag: 'etag' }),
+    delete: jest.fn().mockResolvedValue(undefined),
+  } as any;
+  const service = new BookService(bookRepo, {} as any, {} as any, storage);
+
+  await service.updateCover(new ResourceQuery([['id', 'eq', 'b1']]), {
+    cover: { key: 'temp/key', etag: 'etag' },
+  } as any);
+
+  expect(storage.move).toHaveBeenCalledWith(
+    'temp/key',
+    expect.stringMatching(/^public\/library\/book-covers\/b1\//),
+    expect.objectContaining({ etag: 'etag' }),
+  );
+  expect(storage.delete).toHaveBeenCalledWith('old.jpg');
+});
+
+it('removes cover without moving an upload', async () => {
+  const bookRepo = {
+    findOneOrFail: jest.fn().mockResolvedValue({ id: 'b1', cover: 'old.jpg' }),
+    merge: jest.fn((v, patch) => Object.assign(v, patch)),
+    save: jest.fn(async (v) => v),
+  } as any;
+  const storage = {
+    move: jest.fn(),
+    delete: jest.fn().mockResolvedValue(undefined),
+  } as any;
+  const service = new BookService(bookRepo, {} as any, {} as any, storage);
+
+  await service.updateCover(new ResourceQuery([['id', 'eq', 'b1']]), {
+    cover: null,
+  });
+
+  expect(storage.move).not.toHaveBeenCalled();
+  expect(storage.delete).toHaveBeenCalledWith('old.jpg');
+  expect(bookRepo.save).toHaveBeenCalledWith(
+    expect.objectContaining({ cover: null }),
+  );
+});
+
+it('deletes moved cover when update fails', async () => {
+  const bookRepo = {
+    findOneOrFail: jest.fn().mockResolvedValue({ id: 'b1', cover: 'old.jpg' }),
+    merge: jest.fn(),
+    save: jest.fn().mockRejectedValue(new Error('db down')),
+  } as any;
+  const storage = {
+    move: jest.fn().mockResolvedValue({ key: 'new.jpg', etag: 'etag' }),
+    delete: jest.fn().mockResolvedValue(undefined),
+  } as any;
+  const service = new BookService(bookRepo, {} as any, {} as any, storage);
+
+  await expect(
+    service.updateCover(new ResourceQuery([['id', 'eq', 'b1']]), {
+      cover: { key: 'temp/key', etag: 'etag' },
+    } as any),
+  ).rejects.toThrow('db down');
+  expect(storage.delete).toHaveBeenCalledWith('new.jpg');
+  expect(storage.delete).not.toHaveBeenCalledWith('old.jpg');
+});
+```
+
+- [ ] **Step 2: Run tests to verify they fail**
+
+Run: `cd server && npm test -- book.service.spec library-cover-permission.spec`
+Expected: FAIL because `BookService.updateCover`, its fourth constructor argument, and the permission entry do not exist.
+
+- [ ] **Step 3: Implement the book cover route**
+
+Create `update-book-cover.dto.ts` mirroring `update-user-avatar.dto.ts` with `cover` as the upload field. Add `coverUrl` with `@AfterLoad()` to `Book`. Mark `cover` excluded in `UpdateBookDto`. Add `StorageService` as the fourth `BookService` constructor dependency. Implement `updateCover` using the same move / update / delete-old / cleanup-on-failure flow as `UserService.updateAvatar`, destination prefix `public/library/book-covers/<book.id>/`. Add `@Permission('library:book:update-cover') @Patch(':id/cover')` to `BookController`. Import `StorageModule` in `LibraryModule`. Add permission entry `book:update-cover` under the library book section with `Superadmin` and `Officer` roles.
+
+- [ ] **Step 4: Run tests to verify they pass**
+
+Run: `cd server && npm test -- book.service.spec && npm run build`
+Expected: PASS and successful build.
+
+- [ ] **Step 5: Verify permission data**
+
+Add `library-cover-permission.spec.ts` asserting `PermissionsData` has `book:update-cover` with `Superadmin` and `Officer` roles.
+
+Run: `cd server && npm test -- library-cover-permission.spec && npm run build`
+Expected: PASS and successful build.
+
+- [ ] **Step 6: Apply permission seed**
+
+Run: `cd server && SEED_USERS_PASSWORD=seedpass DB=default npm run typeorm:seed:run`.
+Expected: `permissions` inserts the new `book:update-cover` row and `role_permissions` inserts `Superadmin` and `Officer` mappings.
 
 ---
 

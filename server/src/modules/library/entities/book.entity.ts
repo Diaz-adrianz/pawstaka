@@ -1,4 +1,5 @@
 import {
+  AfterLoad,
   Check,
   Column,
   CreateDateColumn,
@@ -10,6 +11,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Category } from './category.entity';
+import { joinUrl } from '../../../shared/utils/string.util';
+import { s3ConfigGlobal } from '../../../config/s3.config';
 
 @Entity({ schema: 'library', name: 'books' })
 @Check('"stock_available" >= 0')
@@ -78,4 +81,13 @@ export class Book {
 
   @DeleteDateColumn({ type: 'timestamptz' })
   deletedAt: Date;
+
+  // --------------------------
+  coverUrl?: string | null;
+
+  @AfterLoad()
+  setCoverUrl() {
+    if (this.cover)
+      this.coverUrl = joinUrl(s3ConfigGlobal().default.publicUrl, this.cover);
+  }
 }

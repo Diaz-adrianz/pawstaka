@@ -13,6 +13,7 @@ import { ResourceQueryDto } from '../../../../shared/dto/resource-query.dto';
 import { Permission } from '../../../access-control/decorators/permission.decorator';
 import { BookService } from './book.service';
 import { CreateBookDto } from './dto/create-book.dto';
+import { UpdateBookCoverDto } from './dto/update-book-cover.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 
 @Controller('library/books')
@@ -47,6 +48,13 @@ export class BookController {
   update(@Param('id') id: string, @Body() dto: UpdateBookDto) {
     const rq = this.store.buildResourceQuery().add([['id', 'eq', id]]);
     return this.bookService.update(rq, dto);
+  }
+
+  @Permission('library:book:update-cover')
+  @Patch(':id/cover')
+  updateCover(@Param('id') id: string, @Body() dto: UpdateBookCoverDto) {
+    const rq = this.store.buildResourceQuery().add([['id', 'eq', id]]);
+    return this.bookService.updateCover(rq, dto);
   }
 
   @Permission('library:book:archive')

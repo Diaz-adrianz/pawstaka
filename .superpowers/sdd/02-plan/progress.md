@@ -22,3 +22,13 @@ Task 4 pre-flight: consumes `Book`, `Category`, `Loan`, `LoanStatus` from Task 1
 Task 4: Ruling: register `Loan` in `LibraryModule.forFeature` — `BookService` injects `Loan` repository for active-loan guards; cost: one extra entity registration.
 Task 4: Ruling: add fourth spec for hard-delete loan-history guard — Review Focus calls out delete behavior not covered by plan's three tests; cost: one extra small test.
 Task 4: complete (no commits, tests: npm test -- book.service.spec → 4 passed; build: PASS).
+Repo note: user commit `453334e` committed Task 4 — keep as-is, no revert.
+Task 15 added per user request — appended after Task 14 and executed before Tasks 5-14; no renumbering; cost: plan order nonsequential.
+Task 15: Ruling: append to `docs/02-plan.md` instead of creating a separate plan file — user asked for a new task in the active plan; cost: no separate plan artifact.
+Task 15 pre-flight: consumes `BookService`, `Book`, `PermissionsData` from Tasks 1/2/4 and `StorageService` from existing storage module — names and paths match; no conflict.
+Task 15: Ruling: web cover dialog/action deferred — Task 9 owns the web book feature and it does not exist yet; scope is server endpoint plus permission; cost: no UI control until a post-Task-9 follow-up.
+Task 15: Ruling: keep `UpdateBookDto extends PartialType(CreateBookDto)` with excluded `cover?: string` — `OmitType(CreateBookDto, ['cover'])` failed typecheck in this repo; service casts null through update; cost: internal DTO field still typed string, excluded at transform.
+Task 15: Ruling: mock `file-type` in `book.service.spec.ts` — Jest cannot parse the ESM dependency pulled in by `StorageService`; cost: upload validation itself is not exercised by this unit spec.
+Task 15: Ruling: capture `previousCover` before update — mocked repositories return the same entity object, so reading `book.cover` after update loses the old key; cost: none in production, one local variable.
+Task 15: Ruling: full seed run partially failed in user-owned `LibraryBooks` seeder (`stock_total` null) after permission rows inserted — did not change user seed data; cost: full seed command stays red until that seed data is fixed.
+Task 15: complete (no commits, tests: npm test -- book.service.spec library-cover-permission.spec → 8 passed; build: PASS; DB verified: `library:book:update-cover` present with `Officer` and `Superadmin`).

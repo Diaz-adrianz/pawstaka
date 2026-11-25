@@ -1,7 +1,8 @@
 import { PartialType } from '@nestjs/mapped-types';
+import { Exclude } from 'class-transformer';
 import { CreateBookDto } from './create-book.dto';
-import { IsInt, IsString, IsUUID, Min } from 'class-validator';
 import { IsOptionalNonNull } from '../../../../../common/decorators/validators/is-optional-non-null.validator';
+import { IsInt, IsString, IsUUID, Min } from 'class-validator';
 
 export class UpdateBookDto extends PartialType(CreateBookDto) {
   @IsOptionalNonNull()
@@ -20,4 +21,9 @@ export class UpdateBookDto extends PartialType(CreateBookDto) {
   @IsInt()
   @Min(0)
   stockTotal?: number;
+
+  // Internal
+  // --------------------------
+  @Exclude()
+  cover?: string;
 }
