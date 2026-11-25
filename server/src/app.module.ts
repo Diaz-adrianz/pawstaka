@@ -24,6 +24,7 @@ import { PermissionGuard } from './modules/access-control/guards/permission.guar
 import { AuditModule } from './modules/audit/audit.module';
 import { ClientMiddleware } from './common/middlewares/client.middleware';
 import { StorageModule } from './modules/storage/storage.module';
+import { LibraryModule } from './modules/library/library.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { StorageModule } from './modules/storage/storage.module';
     AccessControlModule,
     AuditModule,
     StorageModule,
+    LibraryModule,
   ],
   providers: [
     // Guard providers

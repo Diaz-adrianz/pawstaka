@@ -13,3 +13,7 @@ Task 2: Ruling: make library seeders idempotent via existence checks plus `.orIg
 Task 2: Ruling: use flat dotted condition `{'member.userId': {eq: '{{actor.id}}'}}` instead of plan's nested object — `Condition` type and `StoreService.buildResourceQuery()` accept field strings with operators, not nested objects; cost: plan text stays stale, runtime query behavior matches permission mechanism.
 Task 2: complete (no commits, tests: npm test -- library-seed-data.spec → 4 passed; seed: roles/users/role_users/permissions/role_permissions/templates/categories/books/members all inserted; repeat library seeders 0 inserted; build: PASS).
 User: Task 2 fixes are desired — keep as-is, no revert.
+Task 3: User instructed skip Steps 1 and 2 — skipped RED test write/run; spec added after implementation and run GREEN; cost: no observed failing-test gate for Task 3.
+Task 3 pre-flight: consumes `Category`, `Book`, `ResourceService`, `ResourceQuery`, `StoreService` from earlier code — names and paths match; no conflict.
+Task 3: Ruling: import `reflect-metadata` in `category.service.spec.ts` — Jest has no setup file and `ResourceQueryDto` decorators need Reflect metadata; cost: one import in each service spec that loads DTOs.
+Task 3: complete (no commits, tests: npm test -- category.service.spec → 2 passed; build: PASS).
