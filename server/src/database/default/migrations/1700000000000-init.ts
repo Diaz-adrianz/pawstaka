@@ -1,0 +1,141 @@
+import { MigrationInterface, QueryRunner } from 'typeorm';
+
+export class Init1700000000000 implements MigrationInterface {
+  name = 'Init1700000000000';
+
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `CREATE TABLE "access_control"."role_users" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "role_id" uuid NOT NULL, "user_id" uuid NOT NULL, "username" character varying NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "UQ_e976807ebe4fc773c2365d91566" UNIQUE ("role_id", "user_id"), CONSTRAINT "PK_6b4286b64efea084922d1c709bd" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "access_control"."roles" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "default" boolean NOT NULL DEFAULT false, "enabled" boolean NOT NULL DEFAULT false, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, CONSTRAINT "UQ_648e3f5447f725579d7d4ffdfb7" UNIQUE ("name"), CONSTRAINT "PK_c1433d71a4838793a49dcad46ab" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "access_control"."role_permissions" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "role_id" uuid NOT NULL, "permission_id" uuid NOT NULL, "condition" jsonb, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "UQ_25d24010f53bb80b78e412c9656" UNIQUE ("role_id", "permission_id"), CONSTRAINT "PK_84059017c90bfcb701b8fa42297" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "access_control"."permissions" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "module" character varying NOT NULL, "resource" character varying NOT NULL, "action" character varying NOT NULL, "description" character varying NOT NULL, "enabled" boolean NOT NULL DEFAULT false, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "UQ_534580365a9abdb3120b7307312" UNIQUE ("module", "resource", "action"), CONSTRAINT "PK_920331560282b8bd21bb02290df" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "audit"."activities_outcome_enum" AS ENUM('success', 'failure')`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "audit"."activities" ("id" BIGSERIAL NOT NULL, "occured_at" TIMESTAMP WITH TIME ZONE NOT NULL, "logged_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "request_id" character varying, "module" character varying NOT NULL, "context" jsonb, "actor_type" character varying NOT NULL, "actor_id" character varying, "actor_name" character varying, "action" character varying NOT NULL, "resource_type" character varying, "resource_id" character varying, "outcome" "audit"."activities_outcome_enum" NOT NULL, "metadata" jsonb, CONSTRAINT "PK_7f4004429f731ffb9c88eb486a8" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "auth"."sessions" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "user_id" uuid NOT NULL, "refresh_token_hash" character varying NOT NULL, "client_id" character varying, "client_label" character varying, "client_type" character varying, "client_device" character varying, "browser" character varying, "os" character varying, "os_version" character varying, "ip_address" character varying, "user_agent" character varying, "expires_at" TIMESTAMP WITH TIME ZONE NOT NULL, "last_used_at" TIMESTAMP WITH TIME ZONE, "is_active" boolean NOT NULL DEFAULT true, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "PK_3238ef96f18b355b671619111bc" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "identity"."tokens_type_enum" AS ENUM('invitation', 'set_password')`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "identity"."tokens" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "user_id" uuid NOT NULL, "type" "identity"."tokens_type_enum" NOT NULL, "hash" character varying NOT NULL, "expires_at" TIMESTAMP WITH TIME ZONE NOT NULL, "refreshed_at" TIMESTAMP WITH TIME ZONE NOT NULL, "consumed_at" TIMESTAMP WITH TIME ZONE, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "PK_3001e89ada36263dabf1fb6210a" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE UNIQUE INDEX "active_token_per_type" ON "identity"."tokens"  ("user_id", "type") WHERE "consumed_at" IS NULL`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "identity"."users_status_enum" AS ENUM('active', 'disabled', 'invited')`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "identity"."users" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "username" character varying NOT NULL, "email" character varying NOT NULL, "password" character varying, "status" "identity"."users_status_enum" NOT NULL, "avatar" character varying, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, CONSTRAINT "UQ_fe0bb3f6520ee0469504521e710" UNIQUE ("username"), CONSTRAINT "UQ_97672ac88f789774dd47f7c8be3" UNIQUE ("email"), CONSTRAINT "PK_a3ffb1c0c8416b9fc6f907b7433" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "identity"."profiles_gender_enum" AS ENUM('male', 'female', 'other')`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "identity"."profiles" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "user_id" uuid NOT NULL, "first_name" character varying, "last_name" character varying, "phone_number" character varying, "date_of_birth" date, "gender" "identity"."profiles_gender_enum", "bio" text, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, CONSTRAINT "UQ_9e432b7df0d182f8d292902d1a2" UNIQUE ("user_id"), CONSTRAINT "REL_9e432b7df0d182f8d292902d1a" UNIQUE ("user_id"), CONSTRAINT "PK_8e520eb4da7dc01d0e190447c8e" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "notification"."messages" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "delivery_id" uuid NOT NULL, "user_id" uuid NOT NULL, "title" character varying NOT NULL, "body" text NOT NULL, "action_url" character varying, "read_at" TIMESTAMP WITH TIME ZONE, "payload" jsonb, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "PK_18325f38ae6de43878487eff986" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "notification"."deliveries_type_enum" AS ENUM('transactional', 'system', 'promotional')`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "notification"."deliveries_priority_enum" AS ENUM('critical', 'high', 'normal', 'low')`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "notification"."deliveries" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "type" "notification"."deliveries_type_enum" NOT NULL, "priority" "notification"."deliveries_priority_enum" NOT NULL, "template_key" character varying NOT NULL, "sender" jsonb, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "PK_a6ef225c5c5f0974e503bfb731f" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "notification"."push_tokens_provider_enum" AS ENUM('fcm')`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "notification"."push_tokens" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "user_id" uuid, "provider" "notification"."push_tokens_provider_enum" NOT NULL, "token" character varying NOT NULL, "enabled" boolean NOT NULL DEFAULT true, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "UQ_3470f186e712e35b679da817270" UNIQUE ("provider", "token"), CONSTRAINT "PK_32734e87f299c29ca3878861f4f" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "notification"."templates_channel_enum" AS ENUM('email', 'push', 'in_app')`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "notification"."templates" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "key" character varying NOT NULL, "channel" "notification"."templates_channel_enum" NOT NULL, "title" character varying NOT NULL, "body" text NOT NULL, "available_keys" text array NOT NULL, "sensitive_keys" text array NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, CONSTRAINT "UQ_a0262f833ae847bd105f6895762" UNIQUE ("key", "channel"), CONSTRAINT "PK_515948649ce0bbbe391de702ae5" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "access_control"."role_users" ADD CONSTRAINT "FK_790a8ca58c37fd1f31944ae65e2" FOREIGN KEY ("role_id") REFERENCES "access_control"."roles"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "access_control"."role_permissions" ADD CONSTRAINT "FK_178199805b901ccd220ab7740ec" FOREIGN KEY ("role_id") REFERENCES "access_control"."roles"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "access_control"."role_permissions" ADD CONSTRAINT "FK_17022daf3f885f7d35423e9971e" FOREIGN KEY ("permission_id") REFERENCES "access_control"."permissions"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "identity"."tokens" ADD CONSTRAINT "FK_8769073e38c365f315426554ca5" FOREIGN KEY ("user_id") REFERENCES "identity"."users"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "identity"."profiles" ADD CONSTRAINT "FK_9e432b7df0d182f8d292902d1a2" FOREIGN KEY ("user_id") REFERENCES "identity"."users"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "notification"."messages" ADD CONSTRAINT "FK_d030aa5e7c96396b592ba647e33" FOREIGN KEY ("delivery_id") REFERENCES "notification"."deliveries"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+  }
+
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `ALTER TABLE "notification"."messages" DROP CONSTRAINT "FK_d030aa5e7c96396b592ba647e33"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "identity"."profiles" DROP CONSTRAINT "FK_9e432b7df0d182f8d292902d1a2"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "identity"."tokens" DROP CONSTRAINT "FK_8769073e38c365f315426554ca5"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "access_control"."role_permissions" DROP CONSTRAINT "FK_17022daf3f885f7d35423e9971e"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "access_control"."role_permissions" DROP CONSTRAINT "FK_178199805b901ccd220ab7740ec"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "access_control"."role_users" DROP CONSTRAINT "FK_790a8ca58c37fd1f31944ae65e2"`,
+    );
+    await queryRunner.query(`DROP TABLE "notification"."templates"`);
+    await queryRunner.query(
+      `DROP TYPE "notification"."templates_channel_enum"`,
+    );
+    await queryRunner.query(`DROP TABLE "notification"."push_tokens"`);
+    await queryRunner.query(
+      `DROP TYPE "notification"."push_tokens_provider_enum"`,
+    );
+    await queryRunner.query(`DROP TABLE "notification"."deliveries"`);
+    await queryRunner.query(
+      `DROP TYPE "notification"."deliveries_priority_enum"`,
+    );
+    await queryRunner.query(`DROP TYPE "notification"."deliveries_type_enum"`);
+    await queryRunner.query(`DROP TABLE "notification"."messages"`);
+    await queryRunner.query(`DROP TABLE "identity"."profiles"`);
+    await queryRunner.query(`DROP TYPE "identity"."profiles_gender_enum"`);
+    await queryRunner.query(`DROP TABLE "identity"."users"`);
+    await queryRunner.query(`DROP TYPE "identity"."users_status_enum"`);
+    await queryRunner.query(`DROP INDEX "identity"."active_token_per_type"`);
+    await queryRunner.query(`DROP TABLE "identity"."tokens"`);
+    await queryRunner.query(`DROP TYPE "identity"."tokens_type_enum"`);
+    await queryRunner.query(`DROP TABLE "auth"."sessions"`);
+    await queryRunner.query(`DROP TABLE "audit"."activities"`);
+    await queryRunner.query(`DROP TYPE "audit"."activities_outcome_enum"`);
+    await queryRunner.query(`DROP TABLE "access_control"."permissions"`);
+    await queryRunner.query(`DROP TABLE "access_control"."role_permissions"`);
+    await queryRunner.query(`DROP TABLE "access_control"."roles"`);
+    await queryRunner.query(`DROP TABLE "access_control"."role_users"`);
+  }
+}

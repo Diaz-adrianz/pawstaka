@@ -1,0 +1,53 @@
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { OptionalAuth } from '../../../../common/decorators/optional-auth.decorator';
+import { PushTokenService } from './push-token.service';
+import { RegisterPushTokenDto } from './dto/register-push-token.dto';
+import { ResourceQueryDto } from '../../../../shared/dto/resource-query.dto';
+import { StoreService } from '../../../../infra/store/store.service';
+import { NoAuth } from '../../../../common/decorators/no-auth.decorator';
+import { Permission } from '../../../access-control/decorators/permission.decorator';
+
+@Controller('notification/push-tokens')
+export class PushTokenController {
+  constructor(
+    private readonly pushTokenService: PushTokenService,
+    private store: StoreService,
+  ) {}
+
+  @OptionalAuth()
+  @Post('register')
+  register(@Body() dto: RegisterPushTokenDto) {
+    dto.userId = this.store.userOrNull?.id;
+    return this.pushTokenService.register(dto);
+  }
+
+  @NoAuth()
+  @Patch(':id/revoke')
+  revoke(@Param('id') id: string) {
+    return this.pushTokenService.revoke(id);
+  }
+
+  @NoAuth()
+  @Patch(':token/revoke-by-token')
+  revokeByToken(@Param('token') token: string) {
+    return this.pushTokenService.revokeByToken(token);
+  }
+
+  // ================================================================
+  // Basic CRUD
+  // ----------------------------------------------------------------
+  @Permission('notification:push-token:read')
+  @Get()
+  findMany(@Query() query: ResourceQueryDto) {
+    const rq = this.store.buildResourceQuery().addFromDto(query);
+    return this.pushTokenService.findMany(rq);
+  }
+}
