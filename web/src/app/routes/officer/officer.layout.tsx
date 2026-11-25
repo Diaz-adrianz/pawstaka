@@ -25,10 +25,10 @@ import { useAbility } from '@casl/react';
 import {
   RiArchiveFill,
   RiArchiveLine,
-  RiBarChart2Fill,
-  RiBarChart2Line,
   RiBookFill,
   RiBookLine,
+  RiDashboardFill,
+  RiDashboardLine,
   RiExchangeFill,
   RiExchangeLine,
   RiPriceTag3Fill,
@@ -80,13 +80,6 @@ const MenuGroup: {
         IconActive: RiExchangeFill,
         ability: { action: 'read', subject: 'library:loan' },
       },
-      {
-        path: '/officer/library/reports',
-        label: 'Reports',
-        Icon: RiBarChart2Line,
-        IconActive: RiBarChart2Fill,
-        ability: { action: 'read', subject: 'library:report' },
-      },
     ],
   },
 ];
@@ -107,11 +100,7 @@ const OfficerLayout = () => {
               <SidebarMenuItem>
                 <SidebarMenuButton isActive={!activeMenu} asChild>
                   <Link to={'/officer'}>
-                    {!activeMenu ? (
-                      <RiBarChart2Fill />
-                    ) : (
-                      <RiBarChart2Line />
-                    )}{' '}
+                    {!activeMenu ? <RiDashboardFill /> : <RiDashboardLine />}{' '}
                     Dashboard
                   </Link>
                 </SidebarMenuButton>

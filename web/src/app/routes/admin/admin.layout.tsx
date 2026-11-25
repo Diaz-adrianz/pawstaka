@@ -25,8 +25,6 @@ import { useAbility } from '@casl/react';
 import {
   RiAccountCircleFill,
   RiAccountCircleLine,
-  RiArchiveFill,
-  RiArchiveLine,
   RiBookFill,
   RiBookLine,
   RiDashboardFill,
@@ -65,13 +63,6 @@ const MenuGroup: {
         label: 'Books',
         Icon: RiBookLine,
         IconActive: RiBookFill,
-        ability: { action: 'read', subject: 'library:book' },
-      },
-      {
-        path: '/admin/library/stock',
-        label: 'Stock',
-        Icon: RiArchiveLine,
-        IconActive: RiArchiveFill,
         ability: { action: 'read', subject: 'library:book' },
       },
       {

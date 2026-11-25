@@ -16,7 +16,6 @@ import AccountActivitiesPage from './account/account-activities.page';
 import AccountRolesPage from './account/account-roles.page';
 import CategoriesPage from './categories/categories.page';
 import BooksPage from './books/books.page';
-import StockPage from './stock/stock.page';
 import MembersPage from './library/members.page';
 import LoansPage from './library/loans.page';
 
@@ -58,7 +57,6 @@ const adminRoutes: RouteObject[] = [
     children: [
       { path: 'categories', element: <CategoriesPage /> },
       { path: 'books', element: <BooksPage /> },
-      { path: 'stock', element: <StockPage /> },
       { path: 'members', element: <MembersPage /> },
       { path: 'loans', element: <LoansPage /> },
     ],

@@ -15,7 +15,7 @@ import {
 } from '@/features/library';
 import { Can } from '@casl/react';
 
-const ReportsPage = () => {
+const OfficerPage = () => {
   const [from, setFrom] = useState<string | null>(null);
   const [to, setTo] = useState<string | null>(null);
 
@@ -73,4 +73,4 @@ const ReportsPage = () => {
   );
 };
 
-export default ReportsPage;
+export default OfficerPage;

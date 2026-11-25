@@ -36,7 +36,7 @@ const StockPage = () => {
 
       <PageNav
         items={[
-          { label: 'Dashboard', path: '/admin' },
+          { label: 'Dashboard', path: '/officer' },
           { label: 'Library' },
           { label: 'Stock' },
         ]}
