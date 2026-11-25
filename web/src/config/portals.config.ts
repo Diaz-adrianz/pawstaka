@@ -1,4 +1,4 @@
-import { LogoAdminPortal } from '@/assets/images';
+import { Logo, LogoAdminPortal } from '@/assets/images';
 
 export const Portals = {
   administrator: {
@@ -7,5 +7,12 @@ export const Portals = {
     logo: LogoAdminPortal,
     basePath: '/admin',
     ability: { action: 'access', subject: 'portal:administrator' },
+  },
+  officer: {
+    name: 'Officer',
+    description: 'Manage library catalog, members, loans, and reports',
+    logo: Logo,
+    basePath: '/officer',
+    ability: { action: 'access', subject: 'portal:officer' },
   },
 } as const;

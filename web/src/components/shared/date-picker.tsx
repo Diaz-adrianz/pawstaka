@@ -24,11 +24,13 @@ function DatePickerSingle({
   onValueChange,
   placeholder = 'Select date',
   disabled,
+  id,
 }: {
   value?: string | null;
   onValueChange?: (value: string | null) => void;
   placeholder?: string;
   disabled?: boolean;
+  id?: string;
 }) {
   const [internalValue, setInternalValue] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
@@ -55,6 +57,7 @@ function DatePickerSingle({
           type="button"
           variant="outline"
           disabled={disabled}
+          id={id}
           className="w-full justify-start text-left font-normal"
         >
           <RiCalendar2Line className="mr-2 size-4" />

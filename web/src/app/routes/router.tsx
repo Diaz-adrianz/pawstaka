@@ -11,6 +11,8 @@ import HomeLayout from './home/home.layout';
 import homeRoutes from './home/home.routes';
 import adminRoutes from './admin/admin.routes';
 import AdminLayout from './admin/admin.layout';
+import officerRoutes from './officer/officer.routes';
+import OfficerLayout from './officer/officer.layout';
 import { AuthRoute } from '@/components/shared/auth';
 import { CanRoute } from '@/components/shared/can';
 
@@ -44,6 +46,17 @@ const routes: RouteObject[] = [
           </AuthRoute>
         ),
         children: adminRoutes,
+      },
+      {
+        path: 'officer',
+        element: (
+          <AuthRoute>
+            <CanRoute I={'access'} a={'portal:officer'} redirectTo="/">
+              <OfficerLayout />
+            </CanRoute>
+          </AuthRoute>
+        ),
+        children: officerRoutes,
       },
       {
         path: '*',

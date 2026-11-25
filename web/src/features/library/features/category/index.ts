@@ -18,6 +18,10 @@ export {
   CategoryFormDialog,
   type CategoryFormDialogPayload,
 } from './components/category-form-dialog';
+export {
+  CategoryCombobox,
+  type CategoryComboboxItem,
+} from './components/category-combobox';
 
 // hooks
 export { useCategoryMutations } from './hooks/use-category-mutations';

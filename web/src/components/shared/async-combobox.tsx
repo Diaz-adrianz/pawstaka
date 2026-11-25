@@ -8,16 +8,19 @@ import {
   ComboboxChipsInput,
   ComboboxContent,
   ComboboxEmpty,
+  ComboboxInput,
   ComboboxItem,
   ComboboxList,
   ComboboxValue,
   useComboboxAnchor,
 } from '@/components/ui/combobox';
 import type { Side } from '@base-ui/react/internals/useAnchorPositioning';
+import type { ApiParams } from '@/lib/axios/api.type';
 
 type AsyncComboboxProps<T> = {
   queryKey: readonly unknown[];
-  loadItems: (search: string) => Promise<T[]>;
+  params?: ApiParams;
+  loadItems: (search: string, params?: ApiParams) => Promise<T[]>;
   getItemKey: (item: T) => string | number;
   getItemLabel: (item: T) => string;
   value?: T[];
@@ -42,6 +45,7 @@ type AsyncComboboxProps<T> = {
 
 function AsyncCombobox<T>({
   queryKey,
+  params,
   loadItems,
   getItemKey,
   getItemLabel,
@@ -73,7 +77,7 @@ function AsyncCombobox<T>({
 
   const { data = [], isFetching } = useQuery({
     queryKey: [...queryKey, debouncedSearch],
-    queryFn: () => loadItems(debouncedSearch),
+    queryFn: () => loadItems(debouncedSearch, params),
     enabled: debouncedSearch.length >= minSearchLength,
     staleTime: 30 * 1000,
   });
@@ -148,5 +152,123 @@ function AsyncCombobox<T>({
   );
 }
 
-export { AsyncCombobox };
-export type { AsyncComboboxProps };
+type AsyncComboboxSingleProps<T> = {
+  queryKey: readonly unknown[];
+  params?: ApiParams;
+  loadItems: (search: string, params?: ApiParams) => Promise<T[]>;
+  getItemKey: (item: T) => string | number;
+  getItemLabel: (item: T) => string;
+  value?: T | null;
+  defaultValue?: T;
+  onValueChange?: (value?: T) => void;
+  renderItem?: (item: T) => ReactNode;
+  placeholder?: string;
+  emptyText?: ReactNode;
+  loadingText?: ReactNode;
+  debounceMs?: number;
+  minSearchLength?: number;
+  side?: Side;
+  disabled?: boolean;
+  invalid?: boolean;
+  showClear?: boolean;
+  id?: string;
+  name?: string;
+  className?: string;
+  onBlur?: () => void;
+  container?: HTMLElement | null;
+};
+
+function AsyncComboboxSingle<T>({
+  queryKey,
+  params,
+  loadItems,
+  getItemKey,
+  getItemLabel,
+  value,
+  defaultValue,
+  onValueChange,
+  renderItem,
+  placeholder = 'Search...',
+  emptyText = 'No results found.',
+  loadingText = 'Loading...',
+  debounceMs = 300,
+  minSearchLength = 0,
+  side = 'bottom',
+  disabled,
+  invalid,
+  showClear = true,
+  id,
+  name,
+  className,
+  onBlur,
+  container,
+}: AsyncComboboxSingleProps<T>) {
+  const [internalValue, setInternalValue] = useState<T | null>(
+    defaultValue ?? null
+  );
+  const [search, setSearch] = useState('');
+
+  const debouncedSearch = useDebounce(search, debounceMs);
+
+  const { data = [], isFetching } = useQuery({
+    queryKey: [...queryKey, debouncedSearch],
+    queryFn: () => loadItems(debouncedSearch, params),
+    enabled: debouncedSearch.length >= minSearchLength,
+    staleTime: 30 * 1000,
+  });
+
+  const isControlled = value !== undefined;
+  const selectedValue = isControlled ? value : internalValue;
+
+  const updateValue = (next: T | null) => {
+    setInternalValue(next);
+    onValueChange?.(next ?? undefined);
+  };
+
+  const handleInputValueChange = (inputValue: string) => {
+    if (selectedValue && inputValue === getItemLabel(selectedValue)) {
+      setSearch('');
+      return;
+    }
+    setSearch(inputValue);
+  };
+
+  return (
+    <Combobox
+      items={data}
+      filter={null}
+      autoHighlight
+      disabled={disabled}
+      name={name}
+      value={selectedValue}
+      onValueChange={updateValue}
+      onInputValueChange={handleInputValueChange}
+      itemToStringLabel={getItemLabel}
+      isItemEqualToValue={(a: T, b: T) => getItemKey(a) === getItemKey(b)}
+    >
+      <ComboboxInput
+        id={id}
+        className={className}
+        placeholder={placeholder}
+        aria-invalid={invalid}
+        showClear={showClear && !disabled}
+        disabled={disabled}
+        onBlur={onBlur}
+      />
+
+      <ComboboxContent container={container} side={side}>
+        <ComboboxEmpty>{isFetching ? loadingText : emptyText}</ComboboxEmpty>
+        <ComboboxList>
+          {(item: T) => (
+            <ComboboxItem key={getItemKey(item)} value={item}>
+              {renderItem ? renderItem(item) : getItemLabel(item)}
+            </ComboboxItem>
+          )}
+        </ComboboxList>
+      </ComboboxContent>
+    </Combobox>
+  );
+}
+
+export { AsyncCombobox, AsyncComboboxSingle };
+export type { AsyncComboboxProps, AsyncComboboxSingleProps };

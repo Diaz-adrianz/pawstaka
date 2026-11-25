@@ -720,7 +720,7 @@ Manual check: sign in as `officer@example.com`, open `/admin/library/categories`
 - Create: `web/src/features/library/features/book/components/book-list.tsx`
 - Create: `web/src/features/library/features/book/components/book-form-dialog.tsx`
 - Create: `web/src/features/library/features/book/components/book-actions.tsx`
-- Create: `web/src/features/library/features/book/components/category-combobox.tsx`
+- Create: `web/src/features/library/features/category/components/category-combobox.tsx`
 - Create: `web/src/features/library/features/book/index.ts`
 - Create: `web/src/app/routes/admin/library/books.page.tsx`
 - Modify: `web/src/features/library/index.ts`
@@ -735,9 +735,9 @@ Manual check: sign in as `officer@example.com`, open `/admin/library/categories`
 
 - [ ] **Step 1: Create the feature slice**
 
-Mirror the category slice with `PRE = '/library/books/'`. Schema: `title`, `author`, `categoryId` required; `stockTotal` number min 0. Optional fields mirror the server DTO: `subtitle`, `isbn`, `publisher`, `publishedPlace`, `edition`, `language`, `shelfLocation`, `cover`, `description`, `publishedYear`, `pages`. `publishedYear` and `pages` use `valueAsNumber` so the API receives numbers; `cover` is entered as an S3 key.
+Mirror the category slice with `PRE = '/library/books/'`. Schema: `title`, `author`, `categoryId` required; `stockTotal` number min 0. Optional fields mirror the server DTO: `subtitle`, `isbn`, `publisher`, `publishedPlace`, `edition`, `language`, `shelfLocation`, `description`, `publishedYear`, `pages`. `publishedYear` and `pages` use `valueAsNumber` so the API receives numbers. `cover` stays server-managed through the Task 15 endpoint and has no form field.
 
-`CategoryCombobox` wraps `AsyncCombobox<Pick<Category, 'id' | 'name'>>` and calls `CategoryApi.findMany({ search: 'name:' + s, limit: 10 })`.
+`CategoryCombobox` lives in the category slice and wraps `AsyncComboboxSingle<Pick<Category, 'id' | 'name'>>` (until multi-select is needed), calling `CategoryApi.findMany({ search: 'name:' + s, limit: 10 })`.
 
 `BookListSearchFilter` sends `search: { title: value, author: value, isbn: value }`. `BookListTable` columns: `#`, title (sortable), author, category name, ISBN, stock (`stockAvailable / stockTotal`), actions.
 
@@ -846,8 +846,8 @@ Manual check: create member `AGT-002`, edit the phone, archive and restore it.
 - Create: `web/src/features/library/features/loan/components/loan-list.tsx`
 - Create: `web/src/features/library/features/loan/components/loan-borrow-dialog.tsx`
 - Create: `web/src/features/library/features/loan/components/loan-actions.tsx`
-- Create: `web/src/features/library/features/loan/components/member-combobox.tsx`
-- Create: `web/src/features/library/features/loan/components/book-combobox.tsx`
+- Create: `web/src/features/library/features/member/components/member-combobox.tsx`
+- Create: `web/src/features/library/features/book/components/book-combobox.tsx`
 - Create: `web/src/features/library/features/loan/index.ts`
 - Create: `web/src/app/routes/admin/library/loans.page.tsx`
 - Modify: `web/src/features/library/index.ts`
@@ -865,7 +865,7 @@ Manual check: create member `AGT-002`, edit the phone, archive and restore it.
 
 `useBorrowLoan` and `useReturnLoan` invalidate `loanKeys.lists()`, `bookKeys.lists()`, and `['library', 'report']` because stock changes affect book tables and reports.
 
-`MemberCombobox` and `BookCombobox` wrap `AsyncCombobox` and call `MemberApi.findMany` / `BookApi.findMany` with string query params (the `ApiParams` type only allows primitives). Use `search: 'name:' + s` for members and `search: 'title:' + s` for books. `BookCombobox` hides empty books with `gt: 'stockAvailable:0'`.
+`MemberCombobox` and `BookCombobox` live in their resource slices and wrap `AsyncComboboxSingle`, calling `MemberApi.findMany` / `BookApi.findMany` with string query params (the `ApiParams` type only allows primitives). Use `search: 'name:' + s` for members and `search: 'title:' + s` for books. `BookCombobox` hides empty books with `gt: 'stockAvailable:0'`.
 
 `LoanBorrowDialog` fields: member, book, `dueAt` (DatePickerSingle, default `formatDate(addDays(new Date(), 7), 'yyyy-MM-dd')`). Submit calls `useBorrowLoan`.
 
