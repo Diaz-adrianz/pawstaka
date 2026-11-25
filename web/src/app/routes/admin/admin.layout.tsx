@@ -31,6 +31,8 @@ import {
   RiHistoryLine,
   RiKeyFill,
   RiKeyLine,
+  RiPriceTag3Fill,
+  RiPriceTag3Line,
   RiShieldFill,
   RiShieldLine,
 } from '@remixicon/react';
@@ -63,6 +65,18 @@ const MenuGroup: {
         Icon: RiKeyLine,
         IconActive: RiKeyFill,
         ability: { action: 'read', subject: 'access-control:permission' },
+      },
+    ],
+  },
+  {
+    group: 'Library',
+    menus: [
+      {
+        path: '/admin/library/categories',
+        label: 'Categories',
+        Icon: RiPriceTag3Line,
+        IconActive: RiPriceTag3Fill,
+        ability: { action: 'read', subject: 'library:category' },
       },
     ],
   },

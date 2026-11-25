@@ -14,6 +14,7 @@ import AccountProfilePage from './account/account-profile.page';
 import AccountSessionsPage from './account/account-sessions.page';
 import AccountActivitiesPage from './account/account-activities.page';
 import AccountRolesPage from './account/account-roles.page';
+import CategoriesPage from './library/categories.page';
 
 const adminRoutes: RouteObject[] = [
   {
@@ -47,6 +48,10 @@ const adminRoutes: RouteObject[] = [
       },
       { path: 'permissions', element: <PermissionsPage /> },
     ],
+  },
+  {
+    path: 'library',
+    children: [{ path: 'categories', element: <CategoriesPage /> }],
   },
   {
     path: 'system',

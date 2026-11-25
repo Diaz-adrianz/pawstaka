@@ -44,3 +44,13 @@ Task 6: complete (no commits, tests: npm test -- loan.service.spec → 5 passed;
 Repo note: user commit `3b2a48c` committed Task 6 — keep as-is, no revert.
 Task 7 pre-flight: consumes `Book`, `Member`, `Loan`, `LoanStatus`, and `LibraryModule` from earlier tasks — names and paths match current code; no conflict.
 Task 7: complete (no commits, tests: npm test -- report.service.spec → 1 passed; build: PASS; runtime: summary on current DB returned counts).
+Repo note: user accepted Task 7 and committed `dc050b8 feat(library): report`.
+Web review: no web tasks executed; plan updated only.
+Web review: Ruling: add Task 16 `/officer` portal guarded by `portal:officer:access` and reuse admin library page components from Tasks 8-12 instead of duplicating feature slices — smallest change that gives Petugas a portal while Admin keeps its existing library pages; cost: officer routes couple to admin page files.
+Web review: Ruling: officer dashboard renders `ReportsPage`; admin dashboard stays `AdminPage` and admin gets no Reports route/menu — user explicitly contrasted the two portals; cost: officer shows report both on dashboard and in menu.
+Web review: Ruling: report page moves to `web/src/app/routes/officer/library/reports.page.tsx` in Task 13 — report is officer-only, so no admin page needed; cost: no report page under admin paths.
+Web review: Ruling: officer portal tile reuses existing `Logo` asset — no officer-specific image exists; cost: generic tile icon until an asset is supplied.
+Web review: Ruling: remove home page work from Task 14 and add Task 17 with `copywriting` skill — user asked for a dedicated creative task; cost: `/catalog` and `/loans` links exist only after Task 17.
+Task 8 pre-flight: consumes the existing role feature and admin route/menu patterns; no interface conflict; web has no test runner.
+Task 8: Ruling: defer the browser CRUD manual check — user forbade running dev servers until the end; static verification is typecheck, lint, and production build; cost: create/edit/archive/restore/delete not clicked through yet.
+Task 8: complete (no commits, tests: npm run typecheck → PASS; npm run lint → PASS with 13 pre-existing warnings; npm run build:prod → PASS; manual check deferred).

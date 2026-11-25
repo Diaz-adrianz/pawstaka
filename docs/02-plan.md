@@ -4,7 +4,7 @@
 
 **Goal:** Build a library management app on the existing NestJS + React boilerplate: books, categories, members, borrowing, returns, stock monitoring, and reports.
 
-**Architecture:** One new NestJS `library` module with four TypeORM entities and a transactional loan service. One new React `library` feature folder, surfaced through `/admin/library/*` for Petugas and `/catalog` + `/loans` for Anggota. All access goes through the existing JWT, CASL, and `@Permission` plumbing.
+**Architecture:** One new NestJS `library` module with four TypeORM entities and a transactional loan service. One new React `library` feature folder, surfaced through `/officer/library/*` for Petugas, `/admin/library/*` for Superadmin, and `/catalog` + `/loans` for Anggota. Reports live only in the officer portal. Admin keeps its IAM/System portal with a blank dashboard for now. All access goes through the existing JWT, CASL, and `@Permission` plumbing.
 
 **Tech Stack:** NestJS 11, TypeORM, PostgreSQL, React 19, Vite, TanStack Query/Table, CASL, react-hook-form + yup, shadcn/ui.
 
@@ -15,7 +15,8 @@
 - Do not add dependencies. Use only packages already in `server/package.json` and `web/package.json`.
 - Roles are exactly `Superadmin`, `Officer`, `Member`. `Admin` and `User` are removed.
 - Role mapping: **Petugas = `Officer`**, **Anggota = `Member`**, `Superadmin` keeps full access.
-- Permission keys are always three parts: `library:<resource>:<action>`.
+- Library permission keys are always three parts: `library:<resource>:<action>`.
+- Portal permission keys are `portal:<portal>:access`; `portal:officer:access` and `portal:administrator:access` already exist in seed data.
 - Every list endpoint uses `store.buildResourceQuery().addFromDto(query)` so permission conditions apply.
 - Master data (`categories`, `books`, `members`) uses soft delete: `createdAt`, `updatedAt`, `deletedAt` as `timestamptz`. Loans are not soft-deleted.
 - All IDs are UUIDs. All dates are ISO 8601 UTC (`timestamptz`).
@@ -31,6 +32,7 @@
 4. Returning when `stockAvailable = stockTotal` (drifted data) must return 409 rather than exceed total stock. Tested in Task 6.
 5. Archiving/deleting a category that still has books, or a book with active loans, must return 409 and keep the record. Tested in Tasks 3 and 4.
 6. A failed book-cover update must delete the newly moved permanent object and leave the old cover intact. Tested in Task 15.
+7. `/officer` must require `portal:officer:access`; `/admin` keeps `portal:administrator:access`. Admin has no report route and its dashboard stays blank. Verified manually in Task 16.
 
 ---
 
@@ -895,14 +897,13 @@ Manual check: borrow a book, confirm stock decreases on `/admin/library/books`; 
 - Create: `web/src/features/library/features/report/components/report-summary.tsx`
 - Create: `web/src/features/library/features/report/components/report-top-books.tsx`
 - Create: `web/src/features/library/features/report/index.ts`
-- Create: `web/src/app/routes/admin/library/reports.page.tsx`
+- Create: `web/src/app/routes/officer/library/reports.page.tsx`
 - Modify: `web/src/features/library/index.ts`
-- Modify: `web/src/app/routes/admin/admin.routes.tsx`
-- Modify: `web/src/app/routes/admin/admin.layout.tsx`
 
 **Interfaces:**
 - Produces: `ReportSummary` matching the Task 7 response exactly.
 - Produces: `ReportApi.summary({ from?, to? })`, `useReportSummary({ from?, to? })`, `ReportSummaryCards`, `ReportTopBooks`.
+- Consumed by Task 16 as the officer dashboard and `/officer/library/reports`. Admin gets no report route.
 
 - [ ] **Step 1: Create the report feature**
 
@@ -910,24 +911,18 @@ API: `apiClient.get<ApiResponse<ReportSummary>>('/library/reports/summary', { pa
 
 `useReportSummary({ from, to })` uses query key `['library', 'report', 'summary', { from, to }]` and `select: (d) => d.data.data`.
 
-- [ ] **Step 2: Create the page**
+- [ ] **Step 2: Create the officer-only page**
 
 `reports.page.tsx` shows two `DatePickerSingle` controls (From, To) and:
 - cards: total titles, total stock, available stock, total members, active loans, overdue loans
 - a top-books table: rank, title, total loans
 
-The page is read-only and gated by `library:report` read ability.
+The page is read-only and gated by `library:report` read ability. Do not add an admin route or admin menu item. Task 16 wires this page into the officer portal.
 
-- [ ] **Step 3: Add route and menu**
-
-Add `{ path: 'reports', element: <ReportsPage /> }` and menu item Reports with `RiBarChart2Line` / `RiBarChart2Fill`, subject `library:report`.
-
-- [ ] **Step 4: Verify**
+- [ ] **Step 3: Verify**
 
 Run: `cd web && npm run typecheck && npm run lint`
 Expected: both pass.
-
-Manual check: after a borrow, active loans increases; after a return, returned count increases; the top-books table lists the borrowed title.
 
 ---
 
@@ -937,7 +932,6 @@ Manual check: after a borrow, active loans increases; after a return, returned c
 - Create: `web/src/app/routes/home/catalog/catalog.page.tsx`
 - Create: `web/src/app/routes/home/loans/my-loans.page.tsx`
 - Modify: `web/src/app/routes/home/home.routes.tsx`
-- Modify: `web/src/app/routes/home/home.page.tsx`
 - Modify: `web/src/features/library/index.ts`
 
 **Interfaces:**
@@ -952,9 +946,9 @@ Manual check: after a borrow, active loans increases; after a return, returned c
 
 `my-loans.page.tsx` uses `useResourceQuery({ page: 1, limit: 10, order: { borrowedAt: 'desc' } })` and `useLoans(query.params)`. The backend already scopes `loan:read` to the signed-in member through the permission condition, so no client-side filter is needed. Columns: book title, borrowed date, due date, status, returned date.
 
-- [ ] **Step 3: Add routes and home links**
+- [ ] **Step 3: Add routes**
 
-In `home.routes.tsx`, add both pages wrapped in `<AuthRoute>`. In `home.page.tsx`, replace the placeholder with a simple hero and two `Link` buttons: `Browse catalog` → `/catalog`, `My loans` → `/loans`.
+In `home.routes.tsx`, add both pages wrapped in `<AuthRoute>`. Leave `home.page.tsx` untouched; Task 17 owns the landing-page copy and links.
 
 - [ ] **Step 4: Verify**
 
@@ -1087,12 +1081,130 @@ Expected: `permissions` inserts the new `book:update-cover` row and `role_permis
 
 ---
 
+### Task 16: Officer Portal
+
+**Files:**
+- Create: `web/src/app/routes/officer/officer.layout.tsx`
+- Create: `web/src/app/routes/officer/officer.routes.tsx`
+- Modify: `web/src/app/routes/router.tsx`
+- Modify: `web/src/config/portals.config.ts`
+
+**Interfaces:**
+- Consumes: admin library page components from Tasks 8-12, `ReportsPage` from Task 13, `CanRoute`, `Portals`.
+- Produces: `/officer` portal guarded by `portal:officer:access`.
+- Produces: officer dashboard rendering `ReportsPage`; officer Library menu with Categories, Books, Stock, Members, Loans, Reports.
+- Admin keeps IAM/System, Library pages from Tasks 8-12, blank `AdminPage`, and no Reports route or menu.
+
+- [ ] **Step 1: Register the portal**
+
+In `web/src/config/portals.config.ts`, add an `officer` entry:
+- `name: 'Officer'`
+- `description: 'Manage library catalog, members, loans, and reports'`
+- `logo: Logo` from `@/assets/images` (no officer-specific asset exists yet)
+- `basePath: '/officer'`
+- `ability: { action: 'access', subject: 'portal:officer' }`
+
+`HeaderPortals` already filters by ability, so no manual tile logic is needed.
+
+- [ ] **Step 2: Add the route guard and officer layout**
+
+In `router.tsx`, add beside the admin route:
+
+```tsx
+{
+  path: 'officer',
+  element: (
+    <AuthRoute>
+      <CanRoute I={'access'} a={'portal:officer'} redirectTo="/">
+        <OfficerLayout />
+      </CanRoute>
+    </AuthRoute>
+  ),
+  children: officerRoutes,
+},
+```
+
+`officer.layout.tsx` mirrors `admin.layout.tsx` with `SidebarProvider`, `HeaderLogo`, `HeaderNotifications`, `HeaderPortals`, `HeaderUser`, `Outlet`, and one `Library` menu group:
+- `/officer/library/categories` → `library:category`, `RiPriceTag3Line` / `RiPriceTag3Fill`
+- `/officer/library/books` → `library:book`, `RiBookLine` / `RiBookFill`
+- `/officer/library/stock` → `library:book`, `RiArchiveLine` / `RiArchiveFill`
+- `/officer/library/members` → `library:member`, `RiTeamLine` / `RiTeamFill`
+- `/officer/library/loans` → `library:loan`, `RiExchangeLine` / `RiExchangeFill`
+- `/officer/library/reports` → `library:report`, `RiBarChart2Line` / `RiBarChart2Fill`
+
+No IAM or System group.
+
+- [ ] **Step 3: Wire officer routes**
+
+In `officer.routes.tsx`, map:
+- `''` → `ReportsPage` from `officer/library/reports.page.tsx`
+- `library/categories` → `CategoriesPage` from `admin/library/categories.page.tsx`
+- `library/books` → `BooksPage` from `admin/library/books.page.tsx`
+- `library/stock` → `StockPage` from `admin/library/stock.page.tsx`
+- `library/members` → `MembersPage` from `admin/library/members.page.tsx`
+- `library/loans` → `LoansPage` from `admin/library/loans.page.tsx`
+- `library/reports` → `ReportsPage` from `officer/library/reports.page.tsx`
+
+Do not add a Reports route or menu item to admin. Do not replace `AdminPage`; admin dashboard stays blank for now.
+
+- [ ] **Step 4: Verify**
+
+Run: `cd web && npm run typecheck && npm run lint && npm run build:prod`
+Expected: all pass.
+
+Manual check: sign in as `officer@example.com`; Apps shows Officer but not Administrator; `/officer` shows the report; every Library menu item opens; `/admin` redirects. Sign in as `superadmin@example.com`; both App tiles open. Sign in as `member@example.com`; `/officer` and `/admin` redirect. On `/admin`, dashboard is blank and no Reports menu exists.
+
+---
+
+### Task 17: Home Page Copy
+
+**Skill:** `copywriting`
+
+**Files:**
+- Modify: `web/src/app/routes/home/home.page.tsx`
+
+**Interfaces:**
+- Consumes: `Link`, existing UI primitives, `authStore`, catalog/loans routes from Task 14.
+- Produces: public home page with locked hero copy, primary action, and section copy.
+- `home.page.tsx` is the only file this task changes.
+
+- [ ] **Step 1: Diagnose and draft the copy**
+
+Load the `copywriting` skill. Diagnosis: Situation A, blank placeholder (`const HomePage = () => <div>HomePage</div>`). Check `.agents/product-marketing.md`, `.claude/product-marketing.md`, and `product-marketing-context.md` if any exists; use its Learnings before drafting.
+
+Primary action: `Browse catalog`. Audience: Anggota first, with petugas/admin paths already handled by `HeaderPortals`.
+
+Draft at least three candidates for headline, subheadline, primary CTA, and each section heading. Run the three-question gate and swap test on each line. Keep only supportable claims from the built features: searchable catalog, stock visibility, borrowing and returns tracked by staff, personal loan history, staff reports. No invented statistics, testimonials, awards, guarantees, or superlatives. UI copy stays English.
+
+- [ ] **Step 2: Build the page**
+
+Replace the placeholder with a responsive page using existing `Button`, `Card`, and Tailwind classes. No new dependencies and no new component files.
+
+Structure:
+- Hero: locked headline, subheadline, primary CTA `Browse catalog` → `/catalog`, secondary CTA `My loans` → `/loans` shown only for authenticated users.
+- Three short sections, one idea each: find a book, borrow at the desk and watch the due date, staff keep stock and reports current.
+- No portal tiles in the hero; `HeaderPortals` already owns those.
+- Use one `h1`, logical `h2` sections, descriptive link text, and accessible contrast.
+
+Apply the copy skill's no-AI-tells rules: no contrast reveals, negation lists, stock openers, self-answered questions, trailing pile-ons, or em dashes in short copy.
+
+- [ ] **Step 3: Verify**
+
+Run: `cd web && npm run typecheck && npm run lint && npm run build:prod`
+Expected: all pass.
+
+Manual check: `/` shows the locked copy, CTAs open `/catalog` and `/loans`, unauthenticated visitors do not see `My loans`, and the page reads cleanly at mobile width.
+
+---
+
 ## Final Verification
 
 - [ ] Run `cd server && npm run build && npm test`
 - [ ] Run `cd web && npm run typecheck && npm run lint && npm run build:prod`
 - [ ] Start server: `cd server && npm run start:dev`
 - [ ] Start web: `cd web && npm run dev`
-- [ ] As `officer@example.com`: create category → create book with stock 1 → create member → borrow the book → confirm stock 0 → return → confirm stock 1 → confirm double return is impossible.
-- [ ] As `member@example.com`: `/catalog` lists books, `/loans` shows only own loans.
-- [ ] Confirm permission denial: a `Member` opening `/admin/library/books` is redirected by `CanRoute`.
+- [ ] As `officer@example.com`: `/officer` shows reports; create category → create book with stock 1 → create member → borrow the book → confirm stock 0 → return → confirm stock 1 → confirm double return is impossible.
+- [ ] As `officer@example.com`: Categories, Books, Stock, Members, Loans, and Reports all open from the officer menu; `/admin` redirects.
+- [ ] As `superadmin@example.com`: both Administrator and Officer tiles open; `/admin` dashboard stays blank and has no Reports menu.
+- [ ] As `member@example.com`: `/catalog` lists books, `/loans` shows only own loans; `/` shows the home page copy and both member CTAs.
+- [ ] Confirm permission denial: a `Member` opening `/admin/library/books` or `/officer` is redirected by `CanRoute`.
