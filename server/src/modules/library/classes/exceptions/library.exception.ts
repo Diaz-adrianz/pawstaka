@@ -17,3 +17,9 @@ export class BookStockBelowBorrowedException extends ConflictException {
     super('Stock total cannot be lower than borrowed copies.');
   }
 }
+
+export class MemberHasLoansException extends ConflictException {
+  constructor() {
+    super('Member still has loans.');
+  }
+}

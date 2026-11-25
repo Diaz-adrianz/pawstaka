@@ -32,3 +32,8 @@ Task 15: Ruling: mock `file-type` in `book.service.spec.ts` — Jest cannot pars
 Task 15: Ruling: capture `previousCover` before update — mocked repositories return the same entity object, so reading `book.cover` after update loses the old key; cost: none in production, one local variable.
 Task 15: Ruling: full seed run partially failed in user-owned `LibraryBooks` seeder (`stock_total` null) after permission rows inserted — did not change user seed data; cost: full seed command stays red until that seed data is fixed.
 Task 15: complete (no commits, tests: npm test -- book.service.spec library-cover-permission.spec → 8 passed; build: PASS; DB verified: `library:book:update-cover` present with `Officer` and `Superadmin`).
+Repo note: user commit `7918b56` committed Task 15 — keep as-is, no revert.
+Task 5 pre-flight: consumes `Member`, `Loan`, `ResourceService`, `ResourceQuery`, `StoreService` from earlier tasks — names and paths match current code; no conflict.
+Task 5: Ruling: use `IsOptionalNonNull` on `UpdateMemberDto.code`, `.name`, `.active` — `PartialType` converts required fields to `IsOptional`, which accepts null; matches user instruction and book/category pattern; cost: three explicit overrides in update DTO.
+Task 5: Ruling: add update-DTO null validation test to `member.service.spec.ts` — user supplied the nullability rule as an explicit requirement; cost: one extra small test.
+Task 5: complete (no commits, tests: npm test -- member.service.spec → 2 passed; build: PASS).

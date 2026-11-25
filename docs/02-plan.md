@@ -402,7 +402,7 @@ Expected: PASS and successful build.
 - Produces: `MemberService` with the same CRUD method names as `CategoryService`.
 - Produces: `MemberHasLoansException extends ConflictException`.
 
-`CreateMemberDto`: `code`, `name` (`@IsNotEmpty() @IsString()`), `email` (`@IsOptional() @IsEmail()`), `phone`, `address` (`@IsOptional() @IsString()`), `userId` (`@IsOptional() @IsUUID()`), `active` (`@IsOptional() @IsBoolean()`). `UpdateMemberDto extends PartialType(CreateMemberDto)`.
+`CreateMemberDto`: `code`, `name` (`@IsNotEmpty() @IsString()`), `email` (`@IsOptional() @IsEmail()`), `phone`, `address` (`@IsOptional() @IsString()`), `userId` (`@IsOptional() @IsUUID()`), `active` (`@IsOptional() @IsBoolean()`). `UpdateMemberDto extends PartialType(CreateMemberDto)` and overrides `code`, `name`, `active` with `@IsOptionalNonNull()` so null is rejected for non-null columns.
 
 - [ ] **Step 1: Write the failing test**
 
