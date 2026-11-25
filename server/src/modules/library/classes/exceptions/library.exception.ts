@@ -1,4 +1,8 @@
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 
 export class CategoryInUseException extends ConflictException {
   constructor() {
@@ -45,5 +49,11 @@ export class BookStockConflictException extends ConflictException {
 export class LoanNotFoundException extends NotFoundException {
   constructor() {
     super('Loan not found.');
+  }
+}
+
+export class ReportRangeException extends BadRequestException {
+  constructor() {
+    super('"from" must be before "to".');
   }
 }

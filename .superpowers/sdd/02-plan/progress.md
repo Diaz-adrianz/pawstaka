@@ -41,3 +41,6 @@ Repo note: user commit `70dbe59` committed Task 5 — keep as-is, no revert.
 Task 6 pre-flight: consumes `Book`, `Member`, `Loan`, `LoanStatus`, `ResourceService`, `ResourceQuery`, `StoreService`, and `LibraryModule` from earlier tasks — names and paths match current code; no conflict.
 Task 6: Ruling: add successful-return stock/lock assertion beyond plan's four tests — Review Focus requires return path to pin row lock and stock increment; cost: one extra small test.
 Task 6: complete (no commits, tests: npm test -- loan.service.spec → 5 passed; build: PASS).
+Repo note: user commit `3b2a48c` committed Task 6 — keep as-is, no revert.
+Task 7 pre-flight: consumes `Book`, `Member`, `Loan`, `LoanStatus`, and `LibraryModule` from earlier tasks — names and paths match current code; no conflict.
+Task 7: complete (no commits, tests: npm test -- report.service.spec → 1 passed; build: PASS; runtime: summary on current DB returned counts).

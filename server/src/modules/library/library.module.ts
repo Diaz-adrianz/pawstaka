@@ -8,6 +8,8 @@ import { MemberController } from './resources/member/member.controller';
 import { MemberService } from './resources/member/member.service';
 import { LoanController } from './resources/loan/loan.controller';
 import { LoanService } from './resources/loan/loan.service';
+import { ReportController } from './resources/report/report.controller';
+import { ReportService } from './resources/report/report.service';
 import { Book } from './entities/book.entity';
 import { Category } from './entities/category.entity';
 import { Loan } from './entities/loan.entity';
@@ -24,7 +26,14 @@ import { StorageModule } from '../storage/storage.module';
     BookController,
     MemberController,
     LoanController,
+    ReportController,
   ],
-  providers: [CategoryService, BookService, MemberService, LoanService],
+  providers: [
+    CategoryService,
+    BookService,
+    MemberService,
+    LoanService,
+    ReportService,
+  ],
 })
 export class LibraryModule {}
