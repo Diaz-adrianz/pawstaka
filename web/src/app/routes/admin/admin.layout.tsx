@@ -51,32 +51,6 @@ const MenuGroup: {
   menus: Menu[];
 }[] = [
   {
-    group: 'IAM',
-    menus: [
-      {
-        path: '/admin/iam/accounts',
-        label: 'Accounts',
-        Icon: RiAccountCircleLine,
-        IconActive: RiAccountCircleFill,
-        ability: { action: 'read', subject: 'identity:user' },
-      },
-      {
-        path: '/admin/iam/roles',
-        label: 'Roles',
-        Icon: RiShieldLine,
-        IconActive: RiShieldFill,
-        ability: { action: 'read', subject: 'access-control:role' },
-      },
-      {
-        path: '/admin/iam/permissions',
-        label: 'Permissions',
-        Icon: RiKeyLine,
-        IconActive: RiKeyFill,
-        ability: { action: 'read', subject: 'access-control:permission' },
-      },
-    ],
-  },
-  {
     group: 'Library',
     menus: [
       {
@@ -113,6 +87,32 @@ const MenuGroup: {
         Icon: RiExchangeLine,
         IconActive: RiExchangeFill,
         ability: { action: 'read', subject: 'library:loan' },
+      },
+    ],
+  },
+  {
+    group: 'IAM',
+    menus: [
+      {
+        path: '/admin/iam/accounts',
+        label: 'Accounts',
+        Icon: RiAccountCircleLine,
+        IconActive: RiAccountCircleFill,
+        ability: { action: 'read', subject: 'identity:user' },
+      },
+      {
+        path: '/admin/iam/roles',
+        label: 'Roles',
+        Icon: RiShieldLine,
+        IconActive: RiShieldFill,
+        ability: { action: 'read', subject: 'access-control:role' },
+      },
+      {
+        path: '/admin/iam/permissions',
+        label: 'Permissions',
+        Icon: RiKeyLine,
+        IconActive: RiKeyFill,
+        ability: { action: 'read', subject: 'access-control:permission' },
       },
     ],
   },

@@ -6,3 +6,6 @@ export { Logo, LogoAdminPortal };
 
 // Ilustrations
 export { default as IlusOnlineProfile } from './ilus-online-profile.svg';
+
+// images
+export { default as ImgPlaceholder } from './img-placeholder.png';

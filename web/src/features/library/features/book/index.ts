@@ -26,6 +26,7 @@ export {
   BookFormDialog,
   type BookFormDialogPayload,
 } from './components/book-form-dialog';
+export { BookDialog, type BookDialogPayload } from './components/book-dialog';
 
 // hooks
 export { useBookMutations } from './hooks/use-book-mutations';

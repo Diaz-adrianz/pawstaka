@@ -15,8 +15,8 @@ import AccountSessionsPage from './account/account-sessions.page';
 import AccountActivitiesPage from './account/account-activities.page';
 import AccountRolesPage from './account/account-roles.page';
 import CategoriesPage from './library/categories.page';
-import BooksPage from './library/books.page';
-import StockPage from './library/stock.page';
+import BooksPage from './books/books.page';
+import StockPage from './stock/stock.page';
 import MembersPage from './library/members.page';
 import LoansPage from './library/loans.page';
 

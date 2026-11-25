@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   BookActions,
+  BookDialog,
+  type BookDialogPayload,
   BookFormDialog,
   BookList,
   BookListSearchFilter,
@@ -19,16 +21,14 @@ import {
   type BookFormDialogPayload,
 } from '@/features/library';
 import { useDialogState } from '@/hooks/use-dialog';
-import { usePortalBase } from '@/hooks/use-portal-base';
 import { useResourceQuery } from '@/lib/resource-query/hooks/use-resource-query';
 import { Can } from '@casl/react';
 import { RiAddLine } from '@remixicon/react';
 
 const BooksPage = () => {
-  const portalBase = usePortalBase();
-
   const createDialog = useDialogState(),
-    updateDialog = useDialogState<BookFormDialogPayload>();
+    updateDialog = useDialogState<BookFormDialogPayload>(),
+    detailDialog = useDialogState<BookDialogPayload>();
 
   const query = useResourceQuery({
       page: 1,
@@ -41,10 +41,11 @@ const BooksPage = () => {
     <Page className="min-h-svh">
       <BookFormDialog {...createDialog} />
       <BookFormDialog {...updateDialog} />
+      <BookDialog {...detailDialog} />
 
       <PageNav
         items={[
-          { label: 'Dashboard', path: portalBase },
+          { label: 'Dashboard', path: '/admin' },
           { label: 'Library' },
           { label: 'Books' },
         ]}
@@ -123,16 +124,6 @@ const BooksPage = () => {
                     enableSorting: false,
                   },
                   {
-                    id: 'stock',
-                    header: () => 'Stock',
-                    cell: ({ row }) => (
-                      <p className="text-muted-foreground">
-                        {`${row.original.stockAvailable} / ${row.original.stockTotal}`}
-                      </p>
-                    ),
-                    enableSorting: false,
-                  },
-                  {
                     id: 'action',
                     header: '',
                     cell: ({ row: { original: book } }) => (
@@ -144,6 +135,7 @@ const BooksPage = () => {
                                 delete: () => mutations.del(book),
                               }
                             : {
+                                view: () => detailDialog.show({ id: book.id }),
                                 edit: () => updateDialog.show({ id: book.id }),
                                 remove: () => mutations.archive(book),
                               }

@@ -14,6 +14,7 @@ export type Book = {
   pages: number | null;
   description: string | null;
   cover: string | null;
+  coverUrl?: string | null;
   shelfLocation: string | null;
   categoryId: string;
   category?: Category;

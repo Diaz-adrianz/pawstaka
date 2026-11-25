@@ -1,7 +1,7 @@
 import type { RouteObject } from 'react-router-dom';
 import CategoriesPage from '../admin/library/categories.page';
-import BooksPage from '../admin/library/books.page';
-import StockPage from '../admin/library/stock.page';
+import BooksPage from '../admin/books/books.page';
+import StockPage from '../admin/stock/stock.page';
 import MembersPage from '../admin/library/members.page';
 import LoansPage from '../admin/library/loans.page';
 import ReportsPage from './library/reports.page';
