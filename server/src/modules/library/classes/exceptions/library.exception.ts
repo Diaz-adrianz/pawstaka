@@ -5,3 +5,15 @@ export class CategoryInUseException extends ConflictException {
     super('Category still has books.');
   }
 }
+
+export class BookHasActiveLoansException extends ConflictException {
+  constructor() {
+    super('Book still has active loans.');
+  }
+}
+
+export class BookStockBelowBorrowedException extends ConflictException {
+  constructor() {
+    super('Stock total cannot be lower than borrowed copies.');
+  }
+}

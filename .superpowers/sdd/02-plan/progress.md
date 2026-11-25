@@ -17,3 +17,8 @@ Task 3: User instructed skip Steps 1 and 2 — skipped RED test write/run; spec 
 Task 3 pre-flight: consumes `Category`, `Book`, `ResourceService`, `ResourceQuery`, `StoreService` from earlier code — names and paths match; no conflict.
 Task 3: Ruling: import `reflect-metadata` in `category.service.spec.ts` — Jest has no setup file and `ResourceQueryDto` decorators need Reflect metadata; cost: one import in each service spec that loads DTOs.
 Task 3: complete (no commits, tests: npm test -- category.service.spec → 2 passed; build: PASS).
+Repo note: user commits `0e6e209` and `8674ab1` changed seed data, removed added specs, and committed Tasks 2-3 — keep as-is, no revert.
+Task 4 pre-flight: consumes `Book`, `Category`, `Loan`, `LoanStatus` from Task 1 and library module from Task 3 — names and paths match current code; no conflict.
+Task 4: Ruling: register `Loan` in `LibraryModule.forFeature` — `BookService` injects `Loan` repository for active-loan guards; cost: one extra entity registration.
+Task 4: Ruling: add fourth spec for hard-delete loan-history guard — Review Focus calls out delete behavior not covered by plan's three tests; cost: one extra small test.
+Task 4: complete (no commits, tests: npm test -- book.service.spec → 4 passed; build: PASS).
