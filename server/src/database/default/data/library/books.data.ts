@@ -15,6 +15,8 @@ export const BooksData: (Pick<
   | 'description'
   | 'cover'
   | 'shelfLocation'
+  | 'stockTotal'
+  | 'stockAvailable'
 > & { categoryName: string })[] = [
   {
     title: 'Laskar Pelangi',
@@ -30,6 +32,8 @@ export const BooksData: (Pick<
     description: 'Ten children fight for education in Belitung.',
     cover: null,
     shelfLocation: 'A-01',
+    stockTotal: 5,
+    stockAvailable: 5,
     categoryName: 'Fiction',
   },
   {
@@ -46,6 +50,8 @@ export const BooksData: (Pick<
     description: 'Colonial-era love story and social struggle.',
     cover: null,
     shelfLocation: 'A-02',
+    stockTotal: 4,
+    stockAvailable: 4,
     categoryName: 'Fiction',
   },
   {
@@ -62,6 +68,8 @@ export const BooksData: (Pick<
     description: 'Human history from Stone Age to modern era.',
     cover: null,
     shelfLocation: 'B-01',
+    stockTotal: 3,
+    stockAvailable: 3,
     categoryName: 'Non-fiction',
   },
   {
@@ -78,6 +86,8 @@ export const BooksData: (Pick<
     description: 'Memoir of escaping isolation through education.',
     cover: null,
     shelfLocation: 'B-02',
+    stockTotal: 3,
+    stockAvailable: 3,
     categoryName: 'Non-fiction',
   },
   {
@@ -94,6 +104,8 @@ export const BooksData: (Pick<
     description: 'Practical guide to writing readable code.',
     cover: null,
     shelfLocation: 'C-01',
+    stockTotal: 5,
+    stockAvailable: 5,
     categoryName: 'Science and Technology',
   },
   {
@@ -110,6 +122,8 @@ export const BooksData: (Pick<
     description: 'Timeless tips for software developers.',
     cover: null,
     shelfLocation: 'C-02',
+    stockTotal: 4,
+    stockAvailable: 4,
     categoryName: 'Science and Technology',
   },
   {
@@ -126,6 +140,8 @@ export const BooksData: (Pick<
     description: 'Small changes that build lasting habits.',
     cover: null,
     shelfLocation: 'D-01',
+    stockTotal: 5,
+    stockAvailable: 5,
     categoryName: 'Self-help',
   },
   {
@@ -142,6 +158,8 @@ export const BooksData: (Pick<
     description: 'Focus strategies for high-value work.',
     cover: null,
     shelfLocation: 'D-02',
+    stockTotal: 3,
+    stockAvailable: 3,
     categoryName: 'Self-help',
   },
   {
@@ -158,6 +176,8 @@ export const BooksData: (Pick<
     description: 'A pig and a spider become friends.',
     cover: null,
     shelfLocation: 'E-01',
+    stockTotal: 4,
+    stockAvailable: 4,
     categoryName: "Children's",
   },
   {
@@ -174,6 +194,8 @@ export const BooksData: (Pick<
     description: 'A boy discovers he is a wizard.',
     cover: null,
     shelfLocation: 'E-02',
+    stockTotal: 5,
+    stockAvailable: 5,
     categoryName: "Children's",
   },
 ];
