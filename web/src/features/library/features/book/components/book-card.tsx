@@ -5,12 +5,15 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 function BookCard({
   book,
+  onViewClick,
 }: {
   book: Pick<
     Book,
@@ -18,7 +21,7 @@ function BookCard({
   > & {
     category?: Pick<NonNullable<Book['category']>, 'name'>;
   };
-}) {
+} & { onViewClick?: () => void }) {
   return (
     <Card key={book.id} className="pt-0" size="sm">
       <div className="relative mx-auto aspect-3/4 w-full">
@@ -58,12 +61,18 @@ function BookCard({
           <Badge variant={'secondary'}>{book.publishedYear}</Badge>
         )}
       </CardContent>
-      {/* <CardContent className="space-y-2 text-sm">
-        <p className="text-muted-foreground">
-          {book.category?.name ?? 'Uncategorized'}
-        </p>
-        
-      </CardContent> */}
+      {onViewClick && (
+        <CardFooter>
+          <Button
+            className="w-full"
+            size={'xs'}
+            variant={'outline'}
+            onClick={onViewClick}
+          >
+            View
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 }
