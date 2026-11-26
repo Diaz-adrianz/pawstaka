@@ -1,10 +1,6 @@
 // api
 export { CategoryApi } from './api/category.api';
-export {
-  categoryKeys,
-  useCategories,
-  useCategory,
-} from './api/category.query';
+export { categoryKeys, useCategories, useCategory } from './api/category.query';
 
 // components
 export {
@@ -19,7 +15,7 @@ export {
   type CategoryFormDialogPayload,
 } from './components/category-form-dialog';
 export {
-  CategoryCombobox,
+  CategoryComboboxSingle,
   type CategoryComboboxItem,
 } from './components/category-combobox';
 

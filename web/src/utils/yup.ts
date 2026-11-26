@@ -7,6 +7,14 @@ export const nullableString = y
   .nullable()
   .optional();
 
+export const nullableNumber = y
+  .number()
+  .transform((v, orig) =>
+    orig === '' || orig === null || Number.isNaN(v) ? null : v
+  )
+  .nullable()
+  .optional();
+
 export const strongPassword = y
   .string()
   .min(8)

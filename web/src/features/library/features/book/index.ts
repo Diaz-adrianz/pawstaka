@@ -22,17 +22,15 @@ export {
   BookCombobox,
   type BookComboboxItem,
 } from './components/book-combobox';
+export { BookCreateDialog } from './components/book-create-dialog';
 export {
-  BookFormDialog,
-  type BookFormDialogPayload,
-} from './components/book-form-dialog';
+  BookUpdateDialog,
+  type BookUpdateDialogPayload,
+} from './components/book-update-dialog';
 export { BookDialog, type BookDialogPayload } from './components/book-dialog';
 
 // hooks
 export { useBookMutations } from './hooks/use-book-mutations';
-
-// schemas
-export { bookSchema, type BookValues } from './schemas/book.schema';
 
 // types
 export { type Book } from './types/book.type';

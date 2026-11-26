@@ -9,16 +9,17 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   BookActions,
+  BookCreateDialog,
   BookDialog,
   type BookDialogPayload,
-  BookFormDialog,
   BookList,
   BookListSearchFilter,
   BookListTable,
   BookListTrashFilter,
-  CategoryCombobox,
+  BookUpdateDialog,
+  type BookUpdateDialogPayload,
+  CategoryComboboxSingle,
   useBookMutations,
-  type BookFormDialogPayload,
 } from '@/features/library';
 import { useDialogState } from '@/hooks/use-dialog';
 import { useResourceQuery } from '@/lib/resource-query/hooks/use-resource-query';
@@ -27,7 +28,7 @@ import { RiAddLine } from '@remixicon/react';
 
 const BooksPage = () => {
   const createDialog = useDialogState(),
-    updateDialog = useDialogState<BookFormDialogPayload>(),
+    updateDialog = useDialogState<BookUpdateDialogPayload>(),
     detailDialog = useDialogState<BookDialogPayload>();
 
   const query = useResourceQuery({
@@ -39,8 +40,8 @@ const BooksPage = () => {
 
   return (
     <Page className="min-h-svh">
-      <BookFormDialog {...createDialog} />
-      <BookFormDialog {...updateDialog} />
+      <BookCreateDialog {...createDialog} />
+      <BookUpdateDialog {...updateDialog} />
       <BookDialog {...detailDialog} />
 
       <PageNav
@@ -68,7 +69,7 @@ const BooksPage = () => {
                 <div className="grow">
                   <BookListSearchFilter />
                 </div>
-                <CategoryCombobox
+                <CategoryComboboxSingle
                   placeholder="Category"
                   onValueChange={(category) =>
                     query.set(

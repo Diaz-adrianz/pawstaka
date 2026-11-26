@@ -1,34 +1,44 @@
 import * as y from 'yup';
+import { type CategoryComboboxItem } from '../../category';
+import { nullableNumber, nullableString } from '@/utils/yup';
 
-const bookSchema = y.object({
+const createBookSchema = y.object({
   title: y.string().trim().required('Title is required'),
-  subtitle: y.string().optional(),
+  subtitle: nullableString,
   author: y.string().trim().required('Author is required'),
-  isbn: y.string().optional(),
-  publisher: y.string().optional(),
-  publishedYear: y
-    .number()
-    .transform((value) => (Number.isNaN(value) ? undefined : value))
-    .integer()
-    .min(1000)
-    .max(2100)
-    .optional(),
-  publishedPlace: y.string().optional(),
-  edition: y.string().optional(),
-  language: y.string().optional(),
-  pages: y
-    .number()
-    .transform((value) => (Number.isNaN(value) ? undefined : value))
-    .integer()
-    .min(1)
-    .optional(),
-  description: y.string().optional(),
-  shelfLocation: y.string().optional(),
-  categoryId: y.string().required('Category is required'),
+  isbn: nullableString,
+  publisher: nullableString,
+  publishedYear: nullableNumber.integer().min(1000).max(2100),
+  publishedPlace: nullableString,
+  edition: nullableString,
+  language: nullableString,
+  pages: nullableNumber.integer().min(1),
+  description: nullableString,
+  shelfLocation: nullableString,
+  category: y.mixed<CategoryComboboxItem>().required('Category is required'),
   stockTotal: y.number().integer().min(0).required('Stock total is required'),
 });
 
-type BookValues = y.InferType<typeof bookSchema>;
+type CreateBookValues = y.InferType<typeof createBookSchema>;
 
-export { bookSchema };
-export type { BookValues };
+const updateBookSchema = y.object({
+  title: y.string().trim().optional(),
+  subtitle: nullableString,
+  author: y.string().trim().optional(),
+  isbn: nullableString,
+  publisher: nullableString,
+  publishedYear: nullableNumber.integer().min(1000).max(2100),
+  publishedPlace: nullableString,
+  edition: nullableString,
+  language: nullableString,
+  pages: nullableNumber.integer().min(1),
+  description: nullableString,
+  shelfLocation: nullableString,
+  category: y.mixed<CategoryComboboxItem>().optional(),
+  stockTotal: y.number().integer().min(0).optional(),
+});
+
+type UpdateBookValues = y.InferType<typeof updateBookSchema>;
+
+export { createBookSchema, updateBookSchema };
+export type { CreateBookValues, UpdateBookValues };

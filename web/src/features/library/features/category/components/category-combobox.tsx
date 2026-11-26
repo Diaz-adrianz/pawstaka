@@ -7,7 +7,7 @@ import type { Category } from '../types/category.type';
 
 type CategoryComboboxItem = Pick<Category, 'id' | 'name'>;
 
-function CategoryCombobox({
+function CategoryComboboxSingle({
   ...props
 }: Omit<
   AsyncComboboxSingleProps<CategoryComboboxItem>,
@@ -30,5 +30,5 @@ function CategoryCombobox({
   );
 }
 
-export { CategoryCombobox };
+export { CategoryComboboxSingle };
 export type { CategoryComboboxItem };
