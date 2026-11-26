@@ -15,6 +15,10 @@ export const nullableNumber = y
   .nullable()
   .optional();
 
+export const requiredNumber = y
+  .number()
+  .transform((value) => (Number.isNaN(value) ? undefined : value));
+
 export const strongPassword = y
   .string()
   .min(8)

@@ -52,7 +52,19 @@ function BookUpdateDialog({
     resolver: yupResolver(updateBookSchema),
     mode: 'onChange',
     values: data && {
-      ...data,
+      title: data.title,
+      subtitle: data.subtitle,
+      author: data.author,
+      isbn: data.isbn,
+      publisher: data.publisher,
+      publishedYear: data.publishedYear,
+      publishedPlace: data.publishedPlace,
+      edition: data.edition,
+      language: data.language,
+      pages: data.pages,
+      description: data.description,
+      shelfLocation: data.shelfLocation,
+      category: data.category,
     },
   });
 
@@ -203,25 +215,6 @@ function BookUpdateDialog({
                   )}
                 />
 
-                <Controller
-                  name="stockTotal"
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor={field.name}>Stok</FieldLabel>
-                      <Input
-                        {...field}
-                        id={field.name}
-                        type="number"
-                        aria-invalid={fieldState.invalid}
-                      />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </Field>
-                  )}
-                />
-
                 <Separator />
 
                 <div className="grid gap-x-4 gap-y-8 sm:grid-cols-2">
@@ -329,6 +322,7 @@ function BookUpdateDialog({
                           value={field.value ?? ''}
                           id={field.name}
                           aria-invalid={fieldState.invalid}
+                          type="number"
                         />
                         {fieldState.invalid && (
                           <FieldError errors={[fieldState.error]} />

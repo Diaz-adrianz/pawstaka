@@ -1,6 +1,6 @@
 import * as y from 'yup';
 import { type CategoryComboboxItem } from '../../category';
-import { nullableNumber, nullableString } from '@/utils/yup';
+import { nullableNumber, nullableString, requiredNumber } from '@/utils/yup';
 
 const createBookSchema = y.object({
   title: y.string().trim().required('Title is required'),
@@ -16,7 +16,10 @@ const createBookSchema = y.object({
   description: nullableString,
   shelfLocation: nullableString,
   category: y.mixed<CategoryComboboxItem>().required('Category is required'),
-  stockTotal: y.number().integer().min(0).required('Stock total is required'),
+  stockTotal: requiredNumber
+    .integer()
+    .min(0)
+    .required('Stock total is required'),
 });
 
 type CreateBookValues = y.InferType<typeof createBookSchema>;
@@ -35,7 +38,6 @@ const updateBookSchema = y.object({
   description: nullableString,
   shelfLocation: nullableString,
   category: y.mixed<CategoryComboboxItem>().optional(),
-  stockTotal: y.number().integer().min(0).optional(),
 });
 
 type UpdateBookValues = y.InferType<typeof updateBookSchema>;

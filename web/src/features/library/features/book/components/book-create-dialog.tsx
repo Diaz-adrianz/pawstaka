@@ -202,7 +202,7 @@ function BookCreateDialog({ open, onOpenChange, hide }: DialogState) {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Stok</FieldLabel>
+                  <FieldLabel htmlFor={field.name}>Stock</FieldLabel>
                   <Input
                     {...field}
                     id={field.name}
@@ -321,6 +321,7 @@ function BookCreateDialog({ open, onOpenChange, hide }: DialogState) {
                       value={field.value ?? ''}
                       id={field.name}
                       aria-invalid={fieldState.invalid}
+                      type="number"
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
