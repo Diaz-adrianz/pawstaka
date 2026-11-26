@@ -27,6 +27,10 @@ export {
   BookUpdateDialog,
   type BookUpdateDialogPayload,
 } from './components/book-update-dialog';
+export {
+  BookUpdateStockDialog,
+  type BookUpdateStockDialogPayload,
+} from './components/book-update-stock-dialog';
 export { BookDialog, type BookDialogPayload } from './components/book-dialog';
 
 // hooks

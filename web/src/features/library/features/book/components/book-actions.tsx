@@ -8,9 +8,10 @@ import {
   RiDeleteBinLine,
   RiEdit2Line,
   RiExpandDiagonalLine,
+  RiIncreaseDecreaseLine,
 } from '@remixicon/react';
 
-type Keys = 'view' | 'edit' | 'remove' | 'restore' | 'delete';
+type Keys = 'view' | 'edit' | 'remove' | 'restore' | 'delete' | 'updateStock';
 
 function BookActions(
   props: Omit<ResourceActionsProps<Keys>, 'keys' | 'actions'>
@@ -26,6 +27,11 @@ function BookActions(
         edit: {
           icon: RiEdit2Line,
           label: 'Edit',
+          can: { i: 'update', a: 'library:book' },
+        },
+        updateStock: {
+          icon: RiIncreaseDecreaseLine,
+          label: 'Update stock',
           can: { i: 'update', a: 'library:book' },
         },
         remove: {

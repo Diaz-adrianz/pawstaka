@@ -14,7 +14,9 @@ import {
   BookListSearchFilter,
   BookListTable,
   BookStockFilter,
+  BookUpdateStockDialog,
   type BookDialogPayload,
+  type BookUpdateStockDialogPayload,
 } from '@/features/library';
 import { useResourceQuery } from '@/lib/resource-query/hooks/use-resource-query';
 import { Progress } from '@/components/ui/progress';
@@ -22,7 +24,8 @@ import { cn } from 'cn';
 import { useDialogState } from '@/hooks/use-dialog';
 
 const StockPage = () => {
-  const detailDialog = useDialogState<BookDialogPayload>();
+  const detailDialog = useDialogState<BookDialogPayload>(),
+    updateStockDialog = useDialogState<BookUpdateStockDialogPayload>();
 
   const query = useResourceQuery({
     page: 1,
@@ -33,6 +36,7 @@ const StockPage = () => {
   return (
     <Page className="min-h-svh">
       <BookDialog {...detailDialog} />
+      <BookUpdateStockDialog {...updateStockDialog} />
 
       <PageNav
         items={[
@@ -141,6 +145,8 @@ const StockPage = () => {
                       <BookActions
                         handlers={{
                           view: () => detailDialog.show({ id: book.id }),
+                          updateStock: () =>
+                            updateStockDialog.show({ id: book.id }),
                         }}
                       />
                     ),

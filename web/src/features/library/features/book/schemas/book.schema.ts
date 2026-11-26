@@ -42,5 +42,14 @@ const updateBookSchema = y.object({
 
 type UpdateBookValues = y.InferType<typeof updateBookSchema>;
 
-export { createBookSchema, updateBookSchema };
-export type { CreateBookValues, UpdateBookValues };
+const updateBookStockSchema = y.object({
+  stockTotal: requiredNumber
+    .integer()
+    .min(0)
+    .required('Stock total is required'),
+});
+
+type UpdateBookStockValues = y.InferType<typeof updateBookStockSchema>;
+
+export { createBookSchema, updateBookSchema, updateBookStockSchema };
+export type { CreateBookValues, UpdateBookValues, UpdateBookStockValues };
