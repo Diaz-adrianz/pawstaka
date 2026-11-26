@@ -53,7 +53,7 @@ function Header({
     <header
       data-scroll-pos={scrollPos}
       className={cn(
-        'fixed top-0 right-0 left-0 z-50 h-(--header-h) border-b border-sidebar-border bg-sidebar transition-all duration-300',
+        'fixed top-0 right-0 left-0 z-50 h-(--header-h) border-b bg-sidebar transition-all duration-300',
         'data-[scroll-pos=start]:bg-transparent',
         'data-[scroll-pos=start]:border-0',
         'data-[scroll-pos=down]:-translate-y-full',
@@ -72,7 +72,7 @@ function Header({
 
 function HeaderLogo() {
   return (
-    <Link to={'/'} className="w-8">
+    <Link to={'/'} className="w-16">
       <img src={Logo} alt="" />
     </Link>
   );

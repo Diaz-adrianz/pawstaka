@@ -1,8 +1,7 @@
 // Logos
-import Logo from './logo.png';
-import LogoAdminPortal from './logo-admin-portal.png';
-
-export { Logo, LogoAdminPortal };
+export { default as Logo } from './logo.png';
+export { default as LogoAdminPortal } from './logo-admin-portal.png';
+export { default as LogoOfficerPortal } from './logo-officer-portal.png';
 
 // Ilustrations
 export { default as IlusOnlineProfile } from './ilus-online-profile.svg';
