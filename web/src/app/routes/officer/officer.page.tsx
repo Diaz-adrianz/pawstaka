@@ -1,32 +1,33 @@
-import { useState } from 'react';
+// import { useState } from 'react';
 import {
   Page,
-  PageHeader,
-  PageNav,
-  PageSection,
+  // PageHeader,
+  // PageNav,
+  // PageSection,
 } from '@/components/shared/page';
-import { DatePickerSingle } from '@/components/shared/date-picker';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Field, FieldLabel } from '@/components/ui/field';
-import {
-  ReportSummaryCards,
-  ReportTopBooks,
-  useReportSummary,
-} from '@/features/library';
-import { Can } from '@casl/react';
+// import { DatePickerSingle } from '@/components/shared/date-picker';
+// import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+// import { Field, FieldLabel } from '@/components/ui/field';
+// import {
+//   ReportSummaryCards,
+//   ReportTopBooks,
+//   useReportSummary,
+// } from '@/features/library';
+// import { Can } from '@casl/react';
 
 const OfficerPage = () => {
-  const [from, setFrom] = useState<string | null>(null);
-  const [to, setTo] = useState<string | null>(null);
+  // const [from, setFrom] = useState<string | null>(null);
+  // const [to, setTo] = useState<string | null>(null);
 
-  const { data } = useReportSummary({
-    from: from ?? undefined,
-    to: to ?? undefined,
-  });
+  // const { data } = useReportSummary({
+  //   from: from ?? undefined,
+  //   to: to ?? undefined,
+  // });
 
   return (
     <Page className="min-h-svh">
-      <PageNav
+      Dashboard
+      {/* <PageNav
         items={[
           { label: 'Dashboard', path: '/officer' },
           { label: 'Library' },
@@ -68,7 +69,7 @@ const OfficerPage = () => {
             </CardContent>
           </Card>
         </Can>
-      </PageSection>
+      </PageSection> */}
     </Page>
   );
 };

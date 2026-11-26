@@ -69,7 +69,7 @@ const BooksPage = () => {
                   <BookListSearchFilter />
                 </div>
                 <CategoryCombobox
-                  placeholder="Filter by category"
+                  placeholder="Category"
                   onValueChange={(category) =>
                     query.set(
                       'eq',

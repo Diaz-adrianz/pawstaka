@@ -1,12 +1,7 @@
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Page } from '@/components/shared/page';
-import authStore from '@/stores/auth.store';
+// import authStore from '@/stores/auth.store';
 import { Link } from 'react-router-dom';
 
 const steps = [
@@ -28,7 +23,7 @@ const steps = [
 ];
 
 const HomePage = () => {
-  const authenticated = authStore((s) => s.status) === 'authenticated';
+  // const authenticated = authStore((s) => s.status) === 'authenticated';
 
   return (
     <Page className="min-h-svh">
@@ -49,11 +44,11 @@ const HomePage = () => {
               <Button size="lg" asChild>
                 <Link to="/catalog">Browse catalog</Link>
               </Button>
-              {authenticated && (
+              {/* {authenticated && (
                 <Button size="lg" variant="outline" asChild>
                   <Link to="/loans">My loans</Link>
                 </Button>
-              )}
+              )} */}
             </div>
           </div>
 

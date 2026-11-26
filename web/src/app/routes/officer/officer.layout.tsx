@@ -29,12 +29,12 @@ import {
   RiBookLine,
   RiDashboardFill,
   RiDashboardLine,
-  RiExchangeFill,
-  RiExchangeLine,
   RiPriceTag3Fill,
   RiPriceTag3Line,
-  RiTeamFill,
-  RiTeamLine,
+  // RiExchangeFill,
+  // RiExchangeLine,
+  // RiTeamFill,
+  // RiTeamLine,
 } from '@remixicon/react';
 import { Link, Outlet } from 'react-router-dom';
 
@@ -66,20 +66,20 @@ const MenuGroup: {
         IconActive: RiArchiveFill,
         ability: { action: 'read', subject: 'library:book' },
       },
-      {
-        path: '/officer/library/members',
-        label: 'Members',
-        Icon: RiTeamLine,
-        IconActive: RiTeamFill,
-        ability: { action: 'read', subject: 'library:member' },
-      },
-      {
-        path: '/officer/library/loans',
-        label: 'Loans',
-        Icon: RiExchangeLine,
-        IconActive: RiExchangeFill,
-        ability: { action: 'read', subject: 'library:loan' },
-      },
+      // {
+      //   path: '/officer/library/members',
+      //   label: 'Members',
+      //   Icon: RiTeamLine,
+      //   IconActive: RiTeamFill,
+      //   ability: { action: 'read', subject: 'library:member' },
+      // },
+      // {
+      //   path: '/officer/library/loans',
+      //   label: 'Loans',
+      //   Icon: RiExchangeLine,
+      //   IconActive: RiExchangeFill,
+      //   ability: { action: 'read', subject: 'library:loan' },
+      // },
     ],
   },
 ];

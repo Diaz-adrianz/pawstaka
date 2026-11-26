@@ -25,22 +25,14 @@ import { useAbility } from '@casl/react';
 import {
   RiAccountCircleFill,
   RiAccountCircleLine,
-  RiBookFill,
-  RiBookLine,
   RiDashboardFill,
   RiDashboardLine,
-  RiExchangeFill,
-  RiExchangeLine,
   RiHistoryFill,
   RiHistoryLine,
   RiKeyFill,
   RiKeyLine,
-  RiPriceTag3Fill,
-  RiPriceTag3Line,
   RiShieldFill,
   RiShieldLine,
-  RiTeamFill,
-  RiTeamLine,
 } from '@remixicon/react';
 import { Link, Outlet } from 'react-router-dom';
 
@@ -48,39 +40,6 @@ const MenuGroup: {
   group: string;
   menus: Menu[];
 }[] = [
-  {
-    group: 'Library',
-    menus: [
-      {
-        path: '/admin/library/categories',
-        label: 'Categories',
-        Icon: RiPriceTag3Line,
-        IconActive: RiPriceTag3Fill,
-        ability: { action: 'read', subject: 'library:category' },
-      },
-      {
-        path: '/admin/library/books',
-        label: 'Books',
-        Icon: RiBookLine,
-        IconActive: RiBookFill,
-        ability: { action: 'read', subject: 'library:book' },
-      },
-      {
-        path: '/admin/library/members',
-        label: 'Members',
-        Icon: RiTeamLine,
-        IconActive: RiTeamFill,
-        ability: { action: 'read', subject: 'library:member' },
-      },
-      {
-        path: '/admin/library/loans',
-        label: 'Loans',
-        Icon: RiExchangeLine,
-        IconActive: RiExchangeFill,
-        ability: { action: 'read', subject: 'library:loan' },
-      },
-    ],
-  },
   {
     group: 'IAM',
     menus: [

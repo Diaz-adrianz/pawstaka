@@ -8,7 +8,7 @@ import SettingsPage from './settings/settings.page';
 import NotificationsPage from './notifications/notifications.page';
 import HomePage from './home.page';
 import CatalogPage from './catalog/catalog.page';
-import MyLoansPage from './loans/my-loans.page';
+// import MyLoansPage from './loans/my-loans.page';
 import { AuthRoute } from '@/components/shared/auth';
 import SettingsNotificationPage from './settings/settings-notification.page';
 
@@ -73,14 +73,14 @@ const homeRoutes: RouteObject[] = [
       </AuthRoute>
     ),
   },
-  {
-    path: 'loans',
-    element: (
-      <AuthRoute>
-        <MyLoansPage />
-      </AuthRoute>
-    ),
-  },
+  // {
+  //   path: 'loans',
+  //   element: (
+  //     <AuthRoute>
+  //       <MyLoansPage />
+  //     </AuthRoute>
+  //   ),
+  // },
 ];
 
 export default homeRoutes;
