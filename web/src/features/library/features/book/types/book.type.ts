@@ -40,6 +40,7 @@ export type CreateData = {
   shelfLocation?: string | null;
   categoryId: string;
   stockTotal: number;
+  cover?: string | null;
 };
 
 export type UpdateData = {
@@ -57,4 +58,5 @@ export type UpdateData = {
   shelfLocation?: string | null;
   categoryId?: string;
   stockTotal?: number;
+  cover?: string | null;
 };

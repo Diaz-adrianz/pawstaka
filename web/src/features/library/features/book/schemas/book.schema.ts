@@ -1,6 +1,15 @@
 import * as y from 'yup';
 import { type CategoryComboboxItem } from '../../category';
 import { nullableNumber, nullableString, requiredNumber } from '@/utils/yup';
+import type { MimeType } from '@/constants/mimetype.constant';
+
+export const BOOK_COVER_MIME_TYPES: MimeType[] = [
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+];
+
+export const BOOK_COVER_MAX_SIZE = 3 * 1024 * 1024;
 
 const createBookSchema = y.object({
   title: y.string().trim().required('Title is required'),

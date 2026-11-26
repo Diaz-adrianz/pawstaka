@@ -6,8 +6,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
+  BOOK_COVER_MAX_SIZE,
+  BOOK_COVER_MIME_TYPES,
   createBookSchema,
   type CreateBookValues,
 } from '../schemas/book.schema';
@@ -26,9 +28,19 @@ import { Input } from '@/components/ui/input';
 import { CategoryComboboxSingle } from '../../category';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
+import { useUpload } from '@/features/storage';
+import { RiAddLine } from '@remixicon/react';
+import { Badge } from '@/components/ui/badge';
+import { LoadingOverlay } from '@/components/shared/loading';
 
 function BookCreateDialog({ open, onOpenChange, hide }: DialogState) {
   const [container, setContainer] = useState<HTMLElement | null>(null);
+
+  const coverUpload = useUpload({
+      mimeTypes: BOOK_COVER_MIME_TYPES,
+      maxSize: BOOK_COVER_MAX_SIZE,
+    }),
+    coverInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<CreateBookValues>({
     resolver: yupResolver(createBookSchema),
@@ -55,13 +67,28 @@ function BookCreateDialog({ open, onOpenChange, hide }: DialogState) {
     onSuccess() {
       hide();
       form.reset();
+      coverUpload.reset();
     },
   });
 
-  const create = ({ category, ...values }: CreateBookValues) => {
+  const create = async ({ category, ...values }: CreateBookValues) => {
+    let cover = null;
+
+    if (coverUpload.file) {
+      cover = await coverUpload.submit();
+      if (cover == null) return;
+    }
+
     toast.promise(
-      createApi.mutateAsync({ ...values, categoryId: category.id }),
-      { loading: 'Creating book...', success: 'Book created' }
+      createApi.mutateAsync({
+        ...values,
+        cover,
+        categoryId: category.id,
+      }),
+      {
+        loading: 'Creating book...',
+        success: 'Book created',
+      }
     );
   };
 
@@ -78,6 +105,38 @@ function BookCreateDialog({ open, onOpenChange, hide }: DialogState) {
           className="-mx-4 no-scrollbar max-h-[60vh] overflow-y-auto px-4 pb-2"
         >
           <FieldGroup>
+            <button
+              type="button"
+              className="relative mx-auto mb-4 aspect-3/4 w-full max-w-40 overflow-hidden rounded-2xl border"
+              disabled={coverUpload.isLoading}
+              onClick={() => coverInputRef.current?.click()}
+            >
+              {coverUpload.isLoading && <LoadingOverlay />}
+              {coverUpload.preview ? (
+                <img
+                  src={coverUpload.preview ?? ''}
+                  alt="Cover preview"
+                  className="size-full object-cover"
+                />
+              ) : (
+                <Badge variant={'ghost'} className="m-auto">
+                  <RiAddLine /> Cover
+                </Badge>
+              )}
+            </button>
+
+            <input
+              ref={coverInputRef}
+              type="file"
+              accept={BOOK_COVER_MIME_TYPES.join(',')}
+              hidden
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                e.target.value = '';
+                if (file) coverUpload.select(file);
+              }}
+            />
+
             <Controller
               name="title"
               control={form.control}
@@ -358,7 +417,11 @@ function BookCreateDialog({ open, onOpenChange, hide }: DialogState) {
             className="w-full"
             type="submit"
             form="form-book-create"
-            disabled={!form.formState.isValid || form.formState.isSubmitting}
+            disabled={
+              !form.formState.isValid ||
+              createApi.isPending ||
+              coverUpload.isLoading
+            }
           >
             Save
           </Button>

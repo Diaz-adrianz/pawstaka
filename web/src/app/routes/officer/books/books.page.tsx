@@ -1,3 +1,4 @@
+import { ImgPlaceholder } from '@/assets/images';
 import { NumberingCell, SortableHeader } from '@/components/shared/data-table';
 import {
   Page,
@@ -92,6 +93,18 @@ const BooksPage = () => {
                     accessorKey: 'title',
                     header: ({ column }) => (
                       <SortableHeader column={column} title="Title" />
+                    ),
+                    cell: ({ row }) => (
+                      <div className="flex items-center gap-4">
+                        <div className="aspect-3/4 w-8 overflow-hidden rounded-md">
+                          <img
+                            src={row.original.coverUrl ?? ImgPlaceholder}
+                            alt={`Cover of ${row.original.title}`}
+                            className="size-full object-cover"
+                          />
+                        </div>
+                        <p>{row.original.title}</p>
+                      </div>
                     ),
                   },
                   {

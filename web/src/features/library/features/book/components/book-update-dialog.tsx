@@ -6,8 +6,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
+  BOOK_COVER_MAX_SIZE,
+  BOOK_COVER_MIME_TYPES,
   updateBookSchema,
   type UpdateBookValues,
 } from '../schemas/book.schema';
@@ -28,6 +30,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { useBook } from '../api/book.query';
 import { NotFoundResourceEmpty } from '@/components/shared/not-found-empty';
+import { useUpload } from '@/features/storage';
+import { LoadingOverlay } from '@/components/shared/loading';
+import { Badge } from '@/components/ui/badge';
+import { RiAddLine } from '@remixicon/react';
 
 type BookUpdateDialogPayload = { id: string };
 
@@ -39,12 +45,19 @@ function BookUpdateDialog({
 }: DialogState<BookUpdateDialogPayload>) {
   const [container, setContainer] = useState<HTMLElement | null>(null);
 
+  const coverUpload = useUpload({
+      mimeTypes: BOOK_COVER_MIME_TYPES,
+      maxSize: BOOK_COVER_MAX_SIZE,
+    }),
+    coverInputRef = useRef<HTMLInputElement>(null);
+
   const { data, isLoading } = useBook(payload?.id ?? '', {
       enabled: !!payload?.id && open,
     }),
     updateApi = useUpdateBook({
       onSuccess() {
         hide();
+        coverUpload.reset();
       },
     });
 
@@ -68,15 +81,23 @@ function BookUpdateDialog({
     },
   });
 
-  const update = ({ category, ...values }: UpdateBookValues) => {
-    if (data)
+  const update = async ({ category, ...values }: UpdateBookValues) => {
+    if (data) {
+      let cover = undefined;
+
+      if (coverUpload.file) {
+        cover = await coverUpload.submit();
+        if (cover == null) return;
+      }
+
       toast.promise(
         updateApi.mutateAsync({
           id: data.id,
-          data: { ...values, categoryId: category?.id },
+          data: { ...values, cover, categoryId: category?.id },
         }),
         { loading: 'Editing book...', success: 'Book edited' }
       );
+    }
   };
 
   return (
@@ -96,6 +117,38 @@ function BookUpdateDialog({
               className="-mx-4 no-scrollbar max-h-[60vh] overflow-y-auto px-4 pb-2"
             >
               <FieldGroup>
+                <button
+                  type="button"
+                  className="relative mx-auto mb-4 aspect-3/4 w-full max-w-40 overflow-hidden rounded-2xl border"
+                  disabled={coverUpload.isLoading}
+                  onClick={() => coverInputRef.current?.click()}
+                >
+                  {coverUpload.isLoading && <LoadingOverlay />}
+                  {coverUpload.preview || data?.coverUrl ? (
+                    <img
+                      src={coverUpload.preview ?? data?.coverUrl ?? ''}
+                      alt="Cover preview"
+                      className="size-full object-cover"
+                    />
+                  ) : (
+                    <Badge variant={'ghost'} className="m-auto">
+                      <RiAddLine /> Cover
+                    </Badge>
+                  )}
+                </button>
+
+                <input
+                  ref={coverInputRef}
+                  type="file"
+                  accept={BOOK_COVER_MIME_TYPES.join(',')}
+                  hidden
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    e.target.value = '';
+                    if (file) coverUpload.select(file);
+                  }}
+                />
+
                 <Controller
                   name="title"
                   control={form.control}
@@ -360,7 +413,9 @@ function BookUpdateDialog({
                 type="submit"
                 form="form-book-update"
                 disabled={
-                  !form.formState.isValid || form.formState.isSubmitting
+                  !form.formState.isValid ||
+                  updateApi.isPending ||
+                  coverUpload.isLoading
                 }
               >
                 Save

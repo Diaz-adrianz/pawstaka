@@ -15,8 +15,8 @@ import { Category } from '../../entities/category.entity';
 import { Loan } from '../../entities/loan.entity';
 import { LoanStatus } from '../../enums/loan-status.enum';
 import { CreateBookDto } from './dto/create-book.dto';
-import { UpdateBookCoverDto } from './dto/update-book-cover.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
+import { IsStorageUploadResult } from '../../../storage/decorators/validators/is-storage-upload.validator';
 
 @Injectable()
 export class BookService extends ResourceService<Book> {
@@ -32,13 +32,15 @@ export class BookService extends ResourceService<Book> {
     super(bookRepo);
   }
 
-  async create(dto: CreateBookDto) {
+  async create({ cover, ...dto }: CreateBookDto) {
     await this.categoryRepo.findOneByOrFail({ id: dto.categoryId });
 
     const data = this.bookRepo.create({
       ...dto,
+      id: randomUUID(),
       stockAvailable: dto.stockTotal,
     });
+    if (cover) data.cover = await this.putCover(data.id, cover);
     return this.bookRepo.save(data);
   }
 
@@ -56,8 +58,10 @@ export class BookService extends ResourceService<Book> {
     });
   }
 
-  async update(rq: ResourceQuery, dto: UpdateBookDto) {
-    const data = await this.load(rq.toFindOptions());
+  async update(rq: ResourceQuery, { cover, ...dto }: UpdateBookDto) {
+    const data = await this.load(rq.toFindOptions()),
+      oldCover = data.cover;
+
     const { stockTotal, ...rest } = dto;
 
     if (stockTotal !== undefined) {
@@ -69,32 +73,14 @@ export class BookService extends ResourceService<Book> {
     }
 
     this.bookRepo.merge(data, rest);
-    return this.bookRepo.save(data);
-  }
-
-  async updateCover(rq: ResourceQuery, dto: UpdateBookCoverDto) {
-    const book = await this.load(rq.toFindOptions());
-    const previousCover = book.cover;
-
-    const cover = dto.cover
-      ? (
-          await this.storage.move(
-            dto.cover.key,
-            `public/library/book-covers/${book.id}/${randomUUID()}`,
-            {
-              etag: dto.cover.etag,
-              cacheControl: 'public, max-age=31536000, immutable',
-            },
-          )
-        ).key
-      : null;
+    if (cover) data.cover = await this.putCover(data.id, cover);
 
     try {
-      const result = await this.update(rq, { cover: cover as string });
-      if (previousCover) await this.storage.delete(previousCover).catch();
+      const result = await this.bookRepo.save(data);
+      if (cover && oldCover) await this.storage.delete(oldCover).catch();
       return result;
     } catch (e) {
-      if (cover) await this.storage.delete(cover).catch();
+      if (cover && data.cover) await this.storage.delete(data.cover).catch();
       throw e;
     }
   }
@@ -133,5 +119,20 @@ export class BookService extends ResourceService<Book> {
     const res = await this.bookRepo.remove(data);
     if (res.cover) await this.storage.delete(res.cover).catch();
     return res;
+  }
+
+  // Utils
+  // ----------------------------------------------------------------
+  private async putCover(id: string, cover: IsStorageUploadResult) {
+    return (
+      await this.storage.move(
+        cover.key,
+        `public/library/book-covers/${id}/${randomUUID()}`,
+        {
+          etag: cover.etag,
+          cacheControl: 'public, max-age=31536000, immutable',
+        },
+      )
+    ).key;
   }
 }

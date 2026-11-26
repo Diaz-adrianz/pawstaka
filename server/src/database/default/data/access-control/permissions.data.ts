@@ -478,11 +478,6 @@ export const PermissionsData: {
         roles: [{ name: RolesData.SUPERADMIN }, { name: RolesData.OFFICER }],
       },
       {
-        description: 'Update book cover',
-        permission: 'book:update-cover',
-        roles: [{ name: RolesData.SUPERADMIN }, { name: RolesData.OFFICER }],
-      },
-      {
         description: 'Archive book',
         permission: 'book:archive',
         roles: [{ name: RolesData.SUPERADMIN }, { name: RolesData.OFFICER }],
