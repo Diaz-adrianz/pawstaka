@@ -32,6 +32,7 @@ export {
   type BookUpdateStockDialogPayload,
 } from './components/book-update-stock-dialog';
 export { BookDialog, type BookDialogPayload } from './components/book-dialog';
+export { BookCard } from './components/book-card';
 
 // hooks
 export { useBookMutations } from './hooks/use-book-mutations';

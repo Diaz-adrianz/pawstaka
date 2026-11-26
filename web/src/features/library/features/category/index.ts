@@ -15,6 +15,7 @@ export {
   type CategoryFormDialogPayload,
 } from './components/category-form-dialog';
 export {
+  CategoryCombobox,
   CategoryComboboxSingle,
   type CategoryComboboxItem,
 } from './components/category-combobox';
